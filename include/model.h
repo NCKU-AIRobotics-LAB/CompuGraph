@@ -7,12 +7,12 @@ class Model {
 public:
 	Model();
 	virtual Node *operator()(Node *) = 0;
-	void compile(Optimizer *optimizer, LossFunction *loss, set<Metric> metrics);
-	vector<map<string, double>> fit(Tensor &x, Tensor &y, int batch_size = -1, int epochs = 1, bool shuffle = true, bool print_result = false);
-	map<string, double> evaluate(Tensor &x, Tensor &y, int batch_size = -1, bool print_result = false);
-	Tensor predict(Tensor &x, bool batch = false);
-	int predict_index(Tensor &x);
-	xt::xarray<int> predict_index_batch(Tensor &x);
+	virtual void compile(Optimizer *optimizer, LossFunction *loss, set<Metric> metrics);
+	virtual vector<map<string, double>> fit(Tensor &x, Tensor &y, int batch_size = -1, int epochs = 1, bool shuffle = true, bool print_result = false);
+	virtual map<string, double> evaluate(Tensor &x, Tensor &y, int batch_size = -1, bool print_result = false);
+	virtual Tensor predict(Tensor &x, bool batch = false);
+	virtual int predict_index(Tensor &x);
+	virtual xt::xarray<int> predict_index_batch(Tensor &x);
 private:
 	Optimizer *m_optimizer;
 	LossFunction *m_loss;

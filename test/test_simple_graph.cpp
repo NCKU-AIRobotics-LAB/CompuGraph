@@ -1,6 +1,6 @@
 #include "graph.h"
 
-void test_simple_graph(int argc, char* argv[]) {
+void test_simple_graph() {
 	Graph::initInstance();
 
 	// Create variables

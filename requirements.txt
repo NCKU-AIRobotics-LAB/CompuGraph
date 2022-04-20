@@ -1,0 +1,2 @@
+pybind11
+git+https://github.com/timcsy/SimpleDNN

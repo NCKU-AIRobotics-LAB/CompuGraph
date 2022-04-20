@@ -114,7 +114,7 @@ xt::xarray<int> Model::predict_index_batch(Tensor &x) {
 }
 
 Dense::Dense(int input_dim, int output_size, OpType activation): m_input_dim(input_dim), m_output_size(output_size), m_activation(activation) {
-	m_weights = new Variable(xt::random::randn<double>({m_input_dim, m_output_size}));
+	m_weights = new Variable(0.01 * xt::random::randn<double>({m_input_dim, m_output_size}));
 	m_bias = new Variable(xt::zeros<double>({1, m_output_size}));
 }
 
