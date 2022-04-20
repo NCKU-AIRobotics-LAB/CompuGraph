@@ -1,0 +1,4 @@
+dnn: tensor.h node.h optimizer.h graph.h model.h dnn.cpp tensor.cpp node.cpp optimizer.cpp graph.cpp model.cpp
+	g++ -std=c++14 -I./lib/xtensor/include -I./lib/xtl/include -I./lib/xsmind/include -I./lib/xtensor-blas/include -lblas -llapack -DHAVE_CBLAS=1 -g -o dnn dnn.cpp tensor.cpp node.cpp optimizer.cpp graph.cpp model.cpp
+test: tensor.h node.h optimizer.h layer.h graph.h test.cpp tensor.cpp node.cpp optimizer.cpp layer.cpp graph.cpp
+	g++ -std=c++14 -I./lib/xtensor/include -I./lib/xtl/include -I./lib/xsmind/include -I./lib/xtensor-blas/include -lblas -llapack -DHAVE_CBLAS=1 -g -o test test.cpp tensor.cpp node.cpp optimizer.cpp graph.cpp model.cpp
