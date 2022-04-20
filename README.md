@@ -10,7 +10,9 @@ It provides python interface to pass data and receiving results, check `python/p
 
 ## Requirements
 CMake (Please make sure you have install CMake!)
+
 Python 3
+
 pybind11 - [Homepage](https://pybind11.readthedocs.io/en/latest/)
 
 
@@ -19,14 +21,8 @@ pybind11 - [Homepage](https://pybind11.readthedocs.io/en/latest/)
 ### Install as Python Package
 To install as a Python package:
 ```
-pip install pybind11
 git clone https://github.com/timcsy/SimpleDNN.git
 pip install ./SimpleDNN
-```
-
-Or using requirements.txt:
-```
-pip install -r requirements.txt
 ```
 
 ### Build Manually
@@ -38,6 +34,7 @@ cmake .. -DPYBIND11_PYTHON_VERSION=3.8
 make
 ```
 Note: The `3.8` part can change to the Python version you currently using.
+Note: Must install pybind11 first before building manually.
 
 
 ## Ussage
@@ -79,9 +76,11 @@ Epochs: 10
 Result:
 
 Training (Accuracy: 0.984)
+
 ![](results/train_1.png)
 
 Testing (Accuracy: 0.9)
+
 ![](results/test_1.png)
 
 ### Second Network
@@ -105,9 +104,11 @@ Epochs: 10
 Result:
 
 Training (Accuracy: 0.902)
+
 ![](results/train_2.png)
 
 Testing (Accuracy: 0.87)
+
 ![](results/test_2.png)
 
 
