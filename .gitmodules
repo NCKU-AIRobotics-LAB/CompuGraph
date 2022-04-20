@@ -1,0 +1,15 @@
+[submodule "lib/xtensor"]
+	path = lib/xtensor
+	url = https://github.com/xtensor-stack/xtensor.git
+[submodule "lib/xtl"]
+	path = lib/xtl
+	url = https://github.com/xtensor-stack/xtl.git
+[submodule "lib/xsimd"]
+	path = lib/xsimd
+	url = https://github.com/xtensor-stack/xsimd.git
+[submodule "lib/xtensor-blas"]
+	path = lib/xtensor-blas
+	url = https://github.com/xtensor-stack/xtensor-blas.git
+[submodule "lib/xtensor-python"]
+	path = lib/xtensor-python
+	url = https://github.com/xtensor-stack/xtensor-python.git
