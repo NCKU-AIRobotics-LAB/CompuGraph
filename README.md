@@ -46,7 +46,7 @@ Remember to call `Graph::initInstance();` in the beginning of your program, and 
 
 You can see the samples in the `test` folder.
 
-If you want to bind with Python, use [pybind11](https://pybind11.readthedocs.io/en/latest/), check `python/pysimplednn.cpp` for more information. If you build manually, you can only import the package at the same location of the .so executable file, if you install as a Python package, you can import it anywhere.
+If you want to bind with Python, simply call `import pysimplednn`, use [pybind11](https://pybind11.readthedocs.io/en/latest/), check `python/pysimplednn.cpp` for more information. If you build manually, you can only import the package at the same location of the .so executable file, if you install as a Python package, you can import it anywhere.
 
 When building the graph, it is recommended to build the network structure before eveluating the graph, and not to build the graph again after eveluation, and it will cause unexpected behaviour. For example, compile the model first before fitting, and not to compile the same model again after fitting or evaluating.
 
@@ -56,7 +56,7 @@ We use MNIST for demo.
 
 Before running the example, download [MNIST](http://yann.lecun.com/exdb/mnist/) data to `data` directory first.
 
-Run `python test.py` to see the result, and check `python/pysimplednn.cpp` for network information.
+Run `python mnist_example.py` to see the result, and check `python/pysimplednn.cpp` for network information.
 
 ### First Network
 Network:

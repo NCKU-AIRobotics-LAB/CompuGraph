@@ -1,8 +1,8 @@
 include_directories(${SIMPLEDNN_HEADER_DIR})
 FILE(GLOB SIMPLEDNN_SOURCES ./**.cpp)
 add_library(simplednn ${SIMPLEDNN_SOURCES})
-# find_package(xtensor::optimize REQUIRED)
 target_link_libraries(simplednn ${lapackblas_libraries})
+
 # for xsimd
 if(WIN32)
 	set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)

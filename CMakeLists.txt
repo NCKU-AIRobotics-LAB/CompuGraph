@@ -18,10 +18,6 @@ ExternalProject_Add(xsimd
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
 		DEPENDS xtl
 )
-# add_subdirectory(${SIMPLEDNN_SOURCE_DIR}/lib/xtl)
-# include_directories(${SIMPLEDNN_SOURCE_DIR}/lib/xtl/include)
-# add_subdirectory(${SIMPLEDNN_SOURCE_DIR}/lib/xsimd)
-# include_directories(${SIMPLEDNN_SOURCE_DIR}/lib/xsimd/include)
 set(XTENSOR_USE_XSIMD 1)
 find_package(TBB)
 if(TBB_FOUND)
@@ -33,12 +29,6 @@ ExternalProject_Add(xtensor
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
 		DEPENDS xsimd
 )
-# add_subdirectory(${SIMPLEDNN_SOURCE_DIR}/lib/xtensor)
-# include_directories(${SIMPLEDNN_SOURCE_DIR}/lib/xtensor/include)
-# add_subdirectory(${SIMPLEDNN_SOURCE_DIR}/lib/xtensor-blas)
-# include_directories(${SIMPLEDNN_SOURCE_DIR}/lib/xtensor-blas/include)
-# add_subdirectory(${SIMPLEDNN_SOURCE_DIR}/lib/xtensor-python)
-# include_directories(${SIMPLEDNN_SOURCE_DIR}/lib/xtensor-pytho/include)
 ExternalProject_Add(xtensor-blas
     GIT_REPOSITORY https://github.com/xtensor-stack/xtensor-blas
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
