@@ -37,7 +37,7 @@ def select_images():
     images_list = []
     labels_list = []
     for n in range(10):
-        idx = np.where(train_labels_data == n)[0][:100]
+        idx = np.where(train_labels_data == n)[0][:]
         images_list.append(train_images_data[idx])
         labels_list.extend(train_labels_data[idx])
     train_images = np.vstack(images_list)
@@ -47,7 +47,7 @@ def select_images():
     images_list = []
     labels_list = []
     for n in range(10):
-        idx = np.where(test_labels_data == n)[0][:10]
+        idx = np.where(test_labels_data == n)[0][:]
         images_list.append(test_images_data[idx])
         labels_list.extend(test_labels_data[idx])
     test_images = np.vstack(images_list)
@@ -62,6 +62,9 @@ X_train = (train_images.reshape(train_images.shape[0], -1) / 255.0).astype(np.fl
 Y_train = train_labels.astype(np.float32)
 X_test = (test_images.reshape(test_images.shape[0], -1) / 255.0).astype(np.float64)
 Y_test = test_labels.astype(np.float64)
+
+if (not os.path.exists('results')):
+    os.makedirs('results')
 
 print('X_train shape:', X_train.shape)
 print('Y_train shape:', Y_train.shape)
@@ -79,13 +82,13 @@ plt.figure(1)
 plt.plot(x, train_err)
 plt.xlabel('epoch')
 plt.ylabel('Training Error')
-plt.savefig('images/train_1.png')
+plt.savefig('results/train_1.png')
 
 plt.figure(2)
 plt.plot(x, test_err)
 plt.xlabel('epoch')
 plt.ylabel('Testing Error')
-plt.savefig('images/test_1.png')
+plt.savefig('results/test_1.png')
 
 
 
@@ -99,10 +102,10 @@ plt.figure(3)
 plt.plot(x, train_err)
 plt.xlabel('epoch')
 plt.ylabel('Training Error')
-plt.savefig('images/train_2.png')
+plt.savefig('results/train_2.png')
 
 plt.figure(4)
 plt.plot(x, test_err)
 plt.xlabel('epoch')
 plt.ylabel('Testing Error')
-plt.savefig('images/test_2.png')
+plt.savefig('results/test_2.png')

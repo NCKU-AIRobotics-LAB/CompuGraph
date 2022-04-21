@@ -48,6 +48,8 @@ You can see the samples in the `test` folder.
 
 If you want to bind with Python, use [pybind11](https://pybind11.readthedocs.io/en/latest/), check `python/pysimplednn.cpp` for more information. If you build manually, you can only import the package at the same location of the .so executable file, if you install as a Python package, you can import it anywhere.
 
+When building the graph, it is recommended to build the network structure before eveluating the graph, and not to build the graph again after eveluation, and it will cause unexpected behaviour. For example, compile the model first before fitting, and not to compile the same model again after fitting or evaluating.
+
 
 ## Example - MNIST
 We use MNIST for demo.
@@ -69,17 +71,19 @@ Loss Function: Cross Entropy
 Using Gradient Descent optimizer
 learning rate: 0.01
 
+Training data size: 60000
+Testing data size: 10000
 Batch size: 32
 Epochs: 10
 ```
 
 Result:
 
-Training (Accuracy: 0.984)
+Training (Accuracy: 0.9802, used time: about 55s)
 
 ![](results/train_1.png)
 
-Testing (Accuracy: 0.9)
+Testing (Accuracy: 0.9963)
 
 ![](results/test_1.png)
 
@@ -97,23 +101,25 @@ Loss Function: Cross Entropy
 Using Gradient Descent optimizer
 learning rate: 0.01
 
+Training data size: 60000
+Testing data size: 10000
 Batch size: 32
 Epochs: 10
 ```
 
 Result:
 
-Training (Accuracy: 0.902)
+Training (Accuracy: 0.9904, used time: about 65s)
 
 ![](results/train_2.png)
 
-Testing (Accuracy: 0.87)
+Testing (Accuracy: 0.9817)
 
 ![](results/test_2.png)
 
 
 ## More Information
-The project is heavily based on [xtensor](https://github.com/xtensor-stack/xtensor), which is a NumPy-like library written in C++, check [docs](https://xtensor.readthedocs.io) for documentation, check [From numpy to xtensor](https://xtensor.readthedocs.io/en/latest/numpy.html) to see the corresponding NumPy functions, it's not support GPU now. We put xtnsor source code in the `lib` directory.
+The project is heavily based on [xtensor](https://github.com/xtensor-stack/xtensor), which is a NumPy-like library written in C++, check [docs](https://xtensor.readthedocs.io) for documentation, check [From numpy to xtensor](https://xtensor.readthedocs.io/en/latest/numpy.html) to see the corresponding NumPy functions, it's not support GPU now, but it support SIMD CPU acceleration. We put xtensor library source code in the `lib` directory.
 
 The project is inspired by [Deep Learning From Scratch: Theory and Implementation](https://www.codingame.com/playgrounds/9487/deep-learning-from-scratch---theory-and-implementation/computational-graphs), that's a really good way to learn about computational graph.
 

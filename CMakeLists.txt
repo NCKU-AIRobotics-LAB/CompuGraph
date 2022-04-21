@@ -13,25 +13,41 @@ ExternalProject_Add(xtl
     GIT_REPOSITORY https://github.com/xtensor-stack/xtl
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} 
 )
-ExternalProject_Add(xtensor
-    GIT_REPOSITORY https://github.com/xtensor-stack/xtensor
+ExternalProject_Add(xsimd
+    GIT_REPOSITORY https://github.com/xtensor-stack/xsimd
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
 		DEPENDS xtl
 )
+# add_subdirectory(${SIMPLEDNN_SOURCE_DIR}/lib/xtl)
+# include_directories(${SIMPLEDNN_SOURCE_DIR}/lib/xtl/include)
+# add_subdirectory(${SIMPLEDNN_SOURCE_DIR}/lib/xsimd)
+# include_directories(${SIMPLEDNN_SOURCE_DIR}/lib/xsimd/include)
+set(XTENSOR_USE_XSIMD 1)
+find_package(TBB)
+if(TBB_FOUND)
+  set(XTENSOR_USE_TBB 1)
+endif()
+# xsimd and TBB dependencies are automatically searched when the following is executed
+ExternalProject_Add(xtensor
+    GIT_REPOSITORY https://github.com/xtensor-stack/xtensor
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+		DEPENDS xsimd
+)
+# add_subdirectory(${SIMPLEDNN_SOURCE_DIR}/lib/xtensor)
+# include_directories(${SIMPLEDNN_SOURCE_DIR}/lib/xtensor/include)
+# add_subdirectory(${SIMPLEDNN_SOURCE_DIR}/lib/xtensor-blas)
+# include_directories(${SIMPLEDNN_SOURCE_DIR}/lib/xtensor-blas/include)
+# add_subdirectory(${SIMPLEDNN_SOURCE_DIR}/lib/xtensor-python)
+# include_directories(${SIMPLEDNN_SOURCE_DIR}/lib/xtensor-pytho/include)
 ExternalProject_Add(xtensor-blas
     GIT_REPOSITORY https://github.com/xtensor-stack/xtensor-blas
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
 		DEPENDS xtensor
 )
-ExternalProject_Add(xsimd
-    GIT_REPOSITORY https://github.com/xtensor-stack/xsimd
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-		DEPENDS xtensor-blas
-)
 ExternalProject_Add(xtensor-python
     GIT_REPOSITORY https://github.com/xtensor-stack/xtensor-python
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DPYBIND11_PYTHON_VERSION=${PYBIND11_PYTHON_VERSION}
-		DEPENDS xsimd
+		DEPENDS xtensor-blas
 )
 
 include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
