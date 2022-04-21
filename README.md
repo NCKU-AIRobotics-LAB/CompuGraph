@@ -79,11 +79,11 @@ Epochs: 10
 
 Result:
 
-Training (Accuracy: 0.9802, used time: about 55s)
+Training (Accuracy: 0.9963, used time: about 55s)
 
 ![](results/train_1.png)
 
-Testing (Accuracy: 0.9963)
+Testing (Accuracy: 0.9802)
 
 ![](results/test_1.png)
 
