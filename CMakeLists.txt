@@ -1,12 +1,13 @@
-cmake_minimum_required(VERSION 3.10)
-project(SIMPLEDNN)
+cmake_minimum_required(VERSION 3.14)
+project(COMPUGRAPH)
 
 include(ExternalProject)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-set(SIMPLEDNN_HEADER_DIR ${SIMPLEDNN_SOURCE_DIR}/include)
+set(COMPUGRAPH_HEADER_DIR ${COMPUGRAPH_SOURCE_DIR}/include)
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
 ExternalProject_Add(xtl
@@ -19,7 +20,7 @@ ExternalProject_Add(xsimd
 		DEPENDS xtl
 )
 set(XTENSOR_USE_XSIMD 1)
-find_package(TBB)
+find_package(TBB QUIET)
 if(TBB_FOUND)
   set(XTENSOR_USE_TBB 1)
 endif()
@@ -53,8 +54,8 @@ add_subdirectory(src)
 add_subdirectory(test)
 
 find_package(pybind11 CONFIG REQUIRED)
-include_directories(${SIMPLEDNN_HEADER_DIR})
+include_directories(${COMPUGRAPH_HEADER_DIR})
 FILE(GLOB PYBIND_SOURCES python/**.cpp)
 find_package(Python3 ${PYBIND11_PYTHON_VERSION} COMPONENTS NumPy REQUIRED)
-pybind11_add_module(pysimplednn ${PYBIND_SOURCES})
-target_link_libraries(pysimplednn PUBLIC simplednn Python3::NumPy)
+pybind11_add_module(compugraph ${PYBIND_SOURCES})
+target_link_libraries(compugraph PUBLIC cg Python3::NumPy)

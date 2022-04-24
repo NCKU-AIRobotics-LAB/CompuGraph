@@ -3,7 +3,7 @@
 #include <pybind11/stl.h>
 #define FORCE_IMPORT_ARRAY
 #include <xtensor-python/pyarray.hpp>
-#include "model.h"
+#include "compugraph.h"
 namespace py = pybind11;
 typedef py::call_guard<py::scoped_ostream_redirect, py::scoped_estream_redirect> pyout;
 
@@ -130,7 +130,7 @@ vector<map<string, double>> mlp2(xt::pyarray<double>& _X_train, xt::pyarray<doub
 }
 
 
-PYBIND11_MODULE(pysimplednn, m) {
+PYBIND11_MODULE(compugraph, m) {
 		xt::import_numpy();
 		
     m.doc() = "pybind11 example plugin"; // optional module docstring

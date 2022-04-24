@@ -1,9 +1,10 @@
 import gzip
 import numpy as np
 import os
+from urllib.request import urlretrieve
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), 'build'))
-from pysimplednn import mlp1, mlp2
+from compugraph import mlp1, mlp2
 import matplotlib.pyplot as plt
 
 # train-images-idx3-ubyte.gz: training set images (9912422 bytes)
@@ -29,6 +30,12 @@ def load_idx(filepath):
         return None
 
 def select_images():
+    if (not os.path.exists('data')):
+        os.makedirs('data')
+    urlretrieve('http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz', 'data/train-images-idx3-ubyte.gz')
+    urlretrieve('http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz', 'data/train-labels-idx1-ubyte.gz')
+    urlretrieve('http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz', 'data/t10k-images-idx3-ubyte.gz')
+    urlretrieve('http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz', 'data/t10k-labels-idx1-ubyte.gz')
     train_images_data = load_idx('data/train-images-idx3-ubyte.gz')
     train_labels_data = load_idx('data/train-labels-idx1-ubyte.gz')
     test_images_data = load_idx('data/t10k-images-idx3-ubyte.gz')

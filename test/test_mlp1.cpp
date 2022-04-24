@@ -1,4 +1,4 @@
-#include "model.h"
+#include "compugraph.h"
 
 class MLP1: public Model {
 public:

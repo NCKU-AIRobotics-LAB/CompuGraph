@@ -1,4 +1,4 @@
-#include "graph.h"
+#include "compugraph.h"
 
 void test_perceptron() {
 	Graph::initInstance();
