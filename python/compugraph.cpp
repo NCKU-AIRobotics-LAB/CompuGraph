@@ -92,10 +92,10 @@ vector<map<string, double>> mlp1(xt::pyarray<double>& _X_train, xt::pyarray<doub
 	vector<map<string, double>> results;
 	for (int i = 0; i < epochs; ++i) {
 		map<string, double> result;
-		auto training_result = model->fit(X_train, Y_train, 32, 1)[0];
+		auto training_result = model->fit(X_train, Y_train, 128, 1)[0];
 		result["train_loss"] = training_result["loss"];
 		result["train_accuracy"] = training_result["accuracy"];
-		auto testing_result = model->evaluate(X_test, Y_test, 1);
+		auto testing_result = model->evaluate(X_test, Y_test, 32);
 		result["test_loss"] = testing_result["loss"];
 		result["test_accuracy"] = testing_result["accuracy"];
 		results.push_back(result);
