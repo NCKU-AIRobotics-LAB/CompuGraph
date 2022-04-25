@@ -7,6 +7,13 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+# The same as xtensor::optimize, but we are using manually config now
+if (MVSC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:fast")
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast -ffast-math")
+endif()
+
 set(COMPUGRAPH_HEADER_DIR ${COMPUGRAPH_SOURCE_DIR}/include)
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
@@ -19,12 +26,6 @@ ExternalProject_Add(xsimd
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
 		DEPENDS xtl
 )
-set(XTENSOR_USE_XSIMD 1)
-find_package(TBB QUIET)
-if(TBB_FOUND)
-  set(XTENSOR_USE_TBB 1)
-endif()
-# xsimd and TBB dependencies are automatically searched when the following is executed
 ExternalProject_Add(xtensor
     GIT_REPOSITORY https://github.com/xtensor-stack/xtensor
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}

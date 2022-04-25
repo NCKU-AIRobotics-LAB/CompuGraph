@@ -1,5 +1,5 @@
-#ifndef _TENSOR_H
-#define _TENSOR_H
+#ifndef TENSOR_H
+#define TENSOR_H
 
 #include <ctime>
 #include "xtensor/xarray.hpp"
@@ -10,8 +10,7 @@
 #include "xtensor/xio.hpp"
 #include "xtensor-blas/xlinalg.hpp"
 using namespace std;
-
-typedef xt::xarray<double> Tensor;
+using Tensor = xt::xarray<double>;
 
 struct Batch {
 	Tensor X;

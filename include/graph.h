@@ -1,5 +1,5 @@
-#ifndef _GRAPH_H
-#define _GRAPH_H
+#ifndef GRAPH_H
+#define GRAPH_H
 
 #include "optimizer.h"
 

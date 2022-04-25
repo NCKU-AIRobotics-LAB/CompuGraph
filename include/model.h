@@ -1,3 +1,6 @@
+#ifndef MODEL_H
+#define MODEL_H
+
 #include <set>
 #include "graph.h"
 
@@ -35,3 +38,5 @@ private:
 	Variable *m_bias;
 	OpType m_activation;
 };
+
+#endif
