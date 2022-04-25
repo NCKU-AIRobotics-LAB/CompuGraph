@@ -81,6 +81,10 @@ private:
 // 	return run(model, X_train, Y_train, X_test, Y_test, epochs);
 // }
 
+void test(string str) {
+	py::print(str);
+}
+
 vector<map<string, double>> mlp1(xt::pyarray<double>& _X_train, xt::pyarray<double>& _Y_train, xt::pyarray<double>& _X_test, xt::pyarray<double>& _Y_test, int epochs) {
 	Graph::initInstance();
 
@@ -135,6 +139,7 @@ PYBIND11_MODULE(compugraph, m) {
 		
     m.doc() = "pybind11 example plugin"; // optional module docstring
 
+		m.def("test", &test, pyout(), "test the module, will print the input string");
     m.def("mlp1", &mlp1, pyout(), "MLP 1");
 		m.def("mlp2", &mlp2, pyout(), "MLP 2");
 }
