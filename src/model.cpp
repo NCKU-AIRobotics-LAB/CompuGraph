@@ -2,6 +2,10 @@
 
 Model::Model() {}
 
+Node *Model::operator()(Node *X) {
+	return forward(X);
+}
+
 void Model::compile(Optimizer *optimizer, LossFunction *loss, set<Metric> metrics) {
 	m_optimizer = optimizer;
 	m_loss = loss;
@@ -9,8 +13,8 @@ void Model::compile(Optimizer *optimizer, LossFunction *loss, set<Metric> metric
 
 	X = new Placeholder("X");
 	Y_true = new Placeholder("Y");
-	Y_pred = (*this)(X);
-	loss_fn = (*m_loss)(Y_true, Y_pred);
+	Y_pred = forward(X);
+	loss_fn = m_loss->foward(Y_true, Y_pred);
 	minimization = m_optimizer->minimize(loss_fn);
 }
 
@@ -118,7 +122,7 @@ Dense::Dense(int input_dim, int output_size, OpType activation): m_input_dim(inp
 	m_bias = new Variable(xt::zeros<double>({1, m_output_size}));
 }
 
-Node *Dense::operator()(Node *X) {
+Node *Dense::forward(Node *X) {
 	Node *y = new Add(new MatMul(X, m_weights), m_bias);
 	y = Operation::createOp(m_activation, y);
 	return y;

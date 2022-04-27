@@ -23,10 +23,10 @@ string op_type_to_string(OpType op_type);
 
 class Node {
 public:
-	Node();
+	Node(NodeType type = NODE_NONE);
 	virtual ~Node();
 	string getId();
-	NodeType getType();
+	virtual NodeType getType();
 	Tensor &getOutput();
 	void setOutput(Tensor output);
 	vector<Node *> &getConsumers();
@@ -62,15 +62,15 @@ public:
 
 class Operation: public Node {
 public:
-	Operation();
-	Operation(Node *input_node);
-	Operation(Node *input_node1, Node *input_node2);
-	Operation(vector<Node *> input_nodes);
+	Operation(OpType op_type = OP_NONE);
+	Operation(OpType op_type, Node *input_node);
+	Operation(OpType op_type, Node *input_node1, Node *input_node2);
+	Operation(OpType op_type, vector<Node *> input_nodes);
 	OpType getOpType();
 	virtual Tensor compute() = 0;
 	virtual vector<Tensor> gradient(Tensor grad_back);
 	vector<Node *> &getInputNodes();
-	static Operation *createOp(OpType op_type, Node * input_node);
+	static Operation *createOp(OpType op_type, Node *input_node);
 	virtual string toString(bool only_shape = true);
 protected:
 	OpType m_op_type;
@@ -81,82 +81,82 @@ protected:
 
 class Add: public Operation {
 public:
-	Add(Node * input_node1, Node * input_node2);
+	Add(Node *input_node1, Node *input_node2);
 	Tensor compute();
 	vector<Tensor> gradient(Tensor grad_back);
 };
 
 class Identity: public Operation {
 public:
-	Identity(Node * input_node);
+	Identity(Node *input_node);
 	Tensor compute();
 	vector<Tensor> gradient(Tensor grad_back);
 };
 
 class LeakyRelu: public Operation {
 public:
-	LeakyRelu(Node * input_node);
+	LeakyRelu(Node *input_node);
 	Tensor compute();
 	vector<Tensor> gradient(Tensor grad_back);
 };
 
 class Log: public Operation {
 public:
-	Log(Node * input_node);
+	Log(Node *input_node);
 	Tensor compute();
 	vector<Tensor> gradient(Tensor grad_back);
 };
 
 class MatMul: public Operation {
 public:
-	MatMul(Node * input_node1, Node * input_node2);
+	MatMul(Node *input_node1, Node *input_node2);
 	Tensor compute();
 	vector<Tensor> gradient(Tensor grad_back);
 };
 
 class Mul: public Operation {
 public:
-	Mul(Node * input_node1, Node * input_node2);
+	Mul(Node *input_node1, Node *input_node2);
 	Tensor compute();
 	vector<Tensor> gradient(Tensor grad_back);
 };
 
 class Neg: public Operation {
 public:
-	Neg(Node * input_node);
+	Neg(Node *input_node);
 	Tensor compute();
 	vector<Tensor> gradient(Tensor grad_back);
 };
 
 class ReduceSum: public Operation {
 public:
-	ReduceSum(Node * input_node);
-	ReduceSum(Node * input_node, int axis);
-	ReduceSum(Node * input_node, vector<int> axis);
+	ReduceSum(Node *input_node);
+	ReduceSum(Node *input_node, int axis);
+	ReduceSum(Node *input_node, vector<int> axis);
 	Tensor compute();
 	vector<Tensor> gradient(Tensor grad_back);
 	string toString(bool only_shape = true);
-private:
+protected:
 	vector<int> m_axis;
 };
 
 class Relu: public Operation {
 public:
-	Relu(Node * input_node);
+	Relu(Node *input_node);
 	Tensor compute();
 	vector<Tensor> gradient(Tensor grad_back);
 };
 
 class Sigmoid: public Operation {
 public:
-	Sigmoid(Node * input_node);
+	Sigmoid(Node *input_node);
 	Tensor compute();
 	vector<Tensor> gradient(Tensor grad_back);
 };
 
 class Softmax: public Operation {
 public:
-	Softmax(Node * input_node);
+	Softmax(Node *input_node);
 	Tensor compute();
 	vector<Tensor> gradient(Tensor grad_back);
 };
@@ -166,7 +166,7 @@ public:
 	Gradient(GradientDescentOptimizer *optimizer, Operation *loss);
 	Tensor compute();
 	string toString(bool only_shape = true);
-private:
+protected:
 	GradientDescentOptimizer *m_optimizer;
 	Operation *m_loss;
 };

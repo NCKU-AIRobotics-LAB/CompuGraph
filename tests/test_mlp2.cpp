@@ -6,9 +6,9 @@ public:
 		fc1 = new Dense(2, 2, LEAKY_RELU);
 		fc2 = new Dense(2, 2);
 	}
-	Node *operator()(Node *X) {
-		X = (*fc1)(X);
-		X = (*fc2)(X);
+	Node *forward(Node *X) {
+		X = fc1->forward(X);
+		X = fc2->forward(X);
 		auto Y = new Softmax(X);
 		return Y;
 	}

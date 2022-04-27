@@ -5,6 +5,12 @@ if(pybind11_FOUND)
   find_package(Python3 ${PYBIND11_PYTHON_VERSION} COMPONENTS NumPy REQUIRED)
   pybind11_add_module(compugraph ${PYBIND_SOURCES})
   target_link_libraries(compugraph PUBLIC cg Python3::NumPy)
+  set_target_properties(compugraph
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+  )
 
   # for xsimd
   if(WIN32)

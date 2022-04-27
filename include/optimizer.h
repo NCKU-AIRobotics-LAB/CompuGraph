@@ -21,7 +21,7 @@ public:
 	double getLearningRate();
 	void setLearningRate(double learning_rate);
 	string toString();
-private:
+protected:
 	double m_learning_rate;
 };
 
@@ -30,13 +30,14 @@ private:
 class LossFunction {
 public:
 	LossFunction();
-	virtual Operation *operator()(Node *y_true, Node *y_pred) = 0;
+	virtual Operation *foward(Node *y_true, Node *y_pred) = 0;
+	Operation *operator()(Node *y_true, Node *y_pred);
 };
 
 class CrossEntropy: public LossFunction { // with softmax layer
 public:
 	CrossEntropy();
-	Operation *operator()(Node *y_true, Node *y_pred);
+	Operation *foward(Node *y_true, Node *y_pred);
 };
 
 #endif

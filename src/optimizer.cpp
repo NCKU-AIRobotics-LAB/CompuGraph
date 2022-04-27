@@ -93,8 +93,13 @@ string GradientDescentOptimizer::toString() {
 // Loss Functions
 LossFunction::LossFunction() {}
 
+Operation *LossFunction::operator()(Node *y_true, Node *y_pred) {
+	return foward(y_true, y_pred);
+}
+
+
 CrossEntropy::CrossEntropy() {}
 
-Operation *CrossEntropy::operator()(Node *y_true, Node *y_pred) {
+Operation *CrossEntropy::foward(Node *y_true, Node *y_pred) {
 	return new Neg(new ReduceSum(new ReduceSum(new Mul(y_true, new Log(y_pred)), 1)));
 }

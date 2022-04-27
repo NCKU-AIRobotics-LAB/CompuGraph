@@ -3,6 +3,7 @@
 
 static int node_current_id = 0;
 
+// Utilities //////////////////////////////////////////////////////////////////
 string node_type_to_string(NodeType node_type) {
 	switch (node_type) {
 		case OP: return "Operation"; break;
@@ -30,7 +31,8 @@ string op_type_to_string(OpType op_type) {
 	}
 }
 
-Node::Node(): m_type(NODE_NONE) {
+// Node //////////////////////////////////////////////////////////////////
+Node::Node(NodeType type): m_type(type) {
 	m_node_id = node_current_id++;
 }
 
@@ -65,15 +67,15 @@ void Node::addConsumer(Node *node) {
 
 string Node::toString(bool only_shape) {
 	string s, sd;
-	s += node_type_to_string(m_type) + " Node " + getId() + "\n";
+	s += node_type_to_string(getType()) + " Node " + getId() + "\n";
 	s += "Consumers: [ "; for(auto &node: m_consumers) s += node->getId() + " "; s += "]\n";
 	s += "Output shape: ( "; for(auto &d: m_output.shape()) { stringstream ss; ss << d; ss >> sd; s += sd + " "; } s+= ")\n";
 	if (!only_shape) { stringstream ss; ss << m_output; s += "Output tensor:\n" + ss.str() + "\n"; }
 	return s;
 }
 
-Placeholder::Placeholder(string name): m_name(name) {
-	m_type = PLACEHOLDER;
+// Placeholder //////////////////////////////////////////////////////////////////
+Placeholder::Placeholder(string name): Node(PLACEHOLDER), m_name(name) {
 	Graph::getInstance()->addPlaceholder(this);
 }
 
@@ -87,13 +89,13 @@ string Placeholder::toString(bool only_shape) {
 	return s;
 }
 
-Variable::Variable() {
-	m_type = VAR;
+// Variable //////////////////////////////////////////////////////////////////
+Variable::Variable(): Node(VAR) {
+	m_output = Tensor();
 	Graph::getInstance()->addVariable(this);
 }
 
-Variable::Variable(Tensor initial_value) {
-	m_type = VAR;
+Variable::Variable(Tensor initial_value): Node(VAR) {
 	m_output = initial_value;
 	Graph::getInstance()->addVariable(this);
 }
@@ -110,24 +112,18 @@ string Variable::toString(bool only_shape) {
 	return Node::toString(only_shape);
 }
 
-Operation::Operation() {
-	m_type = OP;
-	m_op_type = OP_NONE;
+// Operation //////////////////////////////////////////////////////////////////
+Operation::Operation(OpType op_type): Node(OP), m_op_type(op_type) {
 	Graph::getInstance()->addOperation(this);
 }
-
-Operation::Operation(Node * input_node) {
-	m_type = OP;
-	m_op_type = OP_NONE;
+Operation::Operation(OpType op_type, Node *input_node): Node(OP), m_op_type(op_type) {
 	m_input_nodes.push_back(input_node);
 	for (auto input_node: getInputNodes())
 		input_node->addConsumer(this);
 	Graph::getInstance()->addOperation(this);
 }
 
-Operation::Operation(Node * input_node1, Node * input_node2) {
-	m_type = OP;
-	m_op_type = OP_NONE;
+Operation::Operation(OpType op_type, Node *input_node1, Node *input_node2): Node(OP), m_op_type(op_type) {
 	m_input_nodes.push_back(input_node1);
 	m_input_nodes.push_back(input_node2);
 	for (auto input_node: getInputNodes())
@@ -135,9 +131,7 @@ Operation::Operation(Node * input_node1, Node * input_node2) {
 	Graph::getInstance()->addOperation(this);
 }
 
-Operation::Operation(vector<Node *> input_nodes): m_input_nodes(input_nodes) {
-	m_type = OP;
-	m_op_type = OP_NONE;
+Operation::Operation(OpType op_type, vector<Node *> input_nodes): Node(OP), m_input_nodes(input_nodes), m_op_type(op_type) {
 	for (auto input_node: getInputNodes())
 		input_node->addConsumer(this);
 	Graph::getInstance()->addOperation(this);
@@ -151,7 +145,7 @@ vector<Node *> &Operation::getInputNodes() {
 	return m_input_nodes;
 }
 
-Operation *Operation::createOp(OpType op_type, Node * input_node) {
+Operation *Operation::createOp(OpType op_type, Node *input_node) {
 	Operation *op;
 	if (op_type == IDENTITY) {
 		return new Identity(input_node);
@@ -193,9 +187,8 @@ string Operation::toStringAfter(bool only_shape) {
 }
 
 
-Add::Add(Node * input_node1, Node * input_node2): Operation(input_node1, input_node2) {
-	m_op_type = ADD;
-}
+// Add //////////////////////////////////////////////////////////////////
+Add::Add(Node *input_node1, Node *input_node2): Operation(ADD, input_node1, input_node2) {}
 
 Tensor Add::compute() {
 	Tensor &x = getInputNodes()[0]->getOutput();
@@ -227,9 +220,8 @@ vector<Tensor> Add::gradient(Tensor grad_back) {
 }
 
 
-Identity::Identity(Node * input_node): Operation(input_node) {
-	m_op_type = IDENTITY;
-}
+// Identity //////////////////////////////////////////////////////////////////
+Identity::Identity(Node *input_node): Operation(IDENTITY, input_node) {}
 
 Tensor Identity::compute() {
 	Tensor &x = getInputNodes()[0]->getOutput();
@@ -241,9 +233,8 @@ vector<Tensor> Identity::gradient(Tensor grad_back) {
 }
 
 
-LeakyRelu::LeakyRelu(Node * input_node): Operation(input_node) {
-	m_op_type = LEAKY_RELU;
-}
+// LeakyRelu //////////////////////////////////////////////////////////////////
+LeakyRelu::LeakyRelu(Node *input_node): Operation(LEAKY_RELU, input_node) {}
 
 Tensor LeakyRelu::compute() {
 	Tensor &x = getInputNodes()[0]->getOutput();
@@ -256,9 +247,8 @@ vector<Tensor> LeakyRelu::gradient(Tensor grad_back) {
 }
 
 
-Log::Log(Node * input_node): Operation(input_node) {
-	m_op_type = LOG;
-}
+// Log //////////////////////////////////////////////////////////////////
+Log::Log(Node *input_node): Operation(LOG, input_node) {}
 
 Tensor Log::compute() {
 	Tensor &x = getInputNodes()[0]->getOutput();
@@ -271,9 +261,8 @@ vector<Tensor> Log::gradient(Tensor grad_back) {
 }
 
 
-MatMul::MatMul(Node * input_node1, Node * input_node2): Operation(input_node1, input_node2) {
-	m_op_type = MAT_MUL;
-}
+// MatMul //////////////////////////////////////////////////////////////////
+MatMul::MatMul(Node *input_node1, Node *input_node2): Operation(MAT_MUL, input_node1, input_node2) {}
 
 Tensor MatMul::compute() {
 	Tensor &A = getInputNodes()[0]->getOutput();
@@ -288,9 +277,8 @@ vector<Tensor> MatMul::gradient(Tensor grad_back) {
 }
 
 
-Mul::Mul(Node * input_node1, Node * input_node2): Operation(input_node1, input_node2) {
-	m_op_type = MUL;
-}
+// Mul //////////////////////////////////////////////////////////////////
+Mul::Mul(Node *input_node1, Node *input_node2): Operation(MUL, input_node1, input_node2) {}
 
 Tensor Mul::compute() {
 	Tensor &x = getInputNodes()[0]->getOutput();
@@ -305,9 +293,8 @@ vector<Tensor> Mul::gradient(Tensor grad_back) {
 }
 
 
-Neg::Neg(Node * input_node): Operation(input_node) {
-	m_op_type = NEG;
-}
+// Neg //////////////////////////////////////////////////////////////////
+Neg::Neg(Node *input_node): Operation(NEG, input_node) {}
 
 Tensor Neg::compute() {
 	Tensor &x = getInputNodes()[0]->getOutput();
@@ -318,18 +305,17 @@ vector<Tensor> Neg::gradient(Tensor grad_back) {
 	return { -grad_back };
 }
 
-ReduceSum::ReduceSum(Node * input_node): Operation(input_node) {
-	m_op_type = REDUCE_SUM;
+
+// ReduceSum //////////////////////////////////////////////////////////////////
+ReduceSum::ReduceSum(Node *input_node): Operation(REDUCE_SUM, input_node) {
 	m_axis = {};
 }
 
-ReduceSum::ReduceSum(Node * input_node, int axis): Operation(input_node) {
-	m_op_type = REDUCE_SUM;
+ReduceSum::ReduceSum(Node *input_node, int axis): Operation(REDUCE_SUM, input_node) {
 	m_axis = {axis};
 }
 
-ReduceSum::ReduceSum(Node * input_node, vector<int> axis): Operation(input_node) {
-	m_op_type = REDUCE_SUM;
+ReduceSum::ReduceSum(Node *input_node, vector<int> axis): Operation(REDUCE_SUM, input_node) {
 	m_axis = axis;
 }
 
@@ -373,9 +359,8 @@ string ReduceSum::toString(bool only_shape) {
 }
 
 
-Relu::Relu(Node * input_node): Operation(input_node) {
-	m_op_type = RELU;
-}
+// Relu //////////////////////////////////////////////////////////////////
+Relu::Relu(Node *input_node): Operation(RELU, input_node) {}
 
 Tensor Relu::compute() {
 	Tensor &x = getInputNodes()[0]->getOutput();
@@ -388,9 +373,8 @@ vector<Tensor> Relu::gradient(Tensor grad_back) {
 }
 
 
-Sigmoid::Sigmoid(Node * input_node): Operation(input_node) {
-	m_op_type = SIGMOID;
-}
+// Sigmoid //////////////////////////////////////////////////////////////////
+Sigmoid::Sigmoid(Node *input_node): Operation(SIGMOID, input_node) {}
 
 Tensor Sigmoid::compute() {
 	Tensor &a = getInputNodes()[0]->getOutput();
@@ -403,9 +387,8 @@ vector<Tensor> Sigmoid::gradient(Tensor grad_back) {
 }
 
 
-Softmax::Softmax(Node * input_node): Operation(input_node) {
-	m_op_type = SOFTMAX;
-}
+// Softmax //////////////////////////////////////////////////////////////////
+Softmax::Softmax(Node *input_node): Operation(SOFTMAX, input_node) {}
 
 Tensor Softmax::compute() {
 	Tensor &a = getInputNodes()[0]->getOutput();
@@ -419,9 +402,8 @@ vector<Tensor> Softmax::gradient(Tensor grad_back) {
 }
 
 
-Gradient::Gradient(GradientDescentOptimizer *optimizer, Operation *loss): Operation(), m_optimizer(optimizer), m_loss(loss) {
-	m_op_type = GRADIENT;
-}
+// Gradient //////////////////////////////////////////////////////////////////
+Gradient::Gradient(GradientDescentOptimizer *optimizer, Operation *loss): Operation(GRADIENT), m_optimizer(optimizer), m_loss(loss) {}
 
 Tensor Gradient::compute() {
 	shared_ptr<map<Node *, Tensor>> grads_and_vars = m_optimizer->compute_gradients(m_loss);

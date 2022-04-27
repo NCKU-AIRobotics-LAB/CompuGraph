@@ -13,13 +13,13 @@ public:
 		fc_in = new Dense(784, 128, LEAKY_RELU);
 		fc_out = new Dense(128, 10);
 	}
-	Node *operator()(Node *X) {
-		X = (*fc_in)(X);
-		X = (*fc_out)(X);
+	Node *forward(Node *X) {
+		X = fc_in->forward(X);
+		X = fc_out->forward(X);
 		auto Y = new Softmax(X);
 		return Y;
 	}
-private:
+protected:
 	Model *fc_in;
 	Model *fc_out;
 };
@@ -31,74 +31,39 @@ public:
 		fc_1 = new Dense(128, 64, LEAKY_RELU);
 		fc_out = new Dense(64, 10);
 	}
-	Node *operator()(Node *X) {
-		X = (*fc_in)(X);
-		X = (*fc_1)(X);
-		X = (*fc_out)(X);
+	Node *forward(Node *X) {
+		X = fc_in->forward(X);
+		X = fc_1->forward(X);
+		X = fc_out->forward(X);
 		auto Y = new Softmax(X);
 		return Y;
 	}
-private:
+protected:
 	Model *fc_in;
 	Model *fc_1;
 	Model *fc_out;
 };
 
-// vector<map<string, double>> run(Model *model, xt::pyarray<double>& _X_train, xt::pyarray<double>& _Y_train, xt::pyarray<double>& _X_test, xt::pyarray<double>& _Y_test, int epochs) {
-// 	Graph::initInstance();
-
-// 	Tensor X_train = _X_train, Y_train = _Y_train, X_test = _X_test, Y_test = _Y_test;
-// 	// cout << "X_train shape: "; for(auto &i: X_train.shape()) cout << i << ", "; cout << endl;
-// 	// cout << "Y_train shape: "; for(auto &i: Y_train.shape()) cout << i << ", "; cout << endl;
-// 	// cout << "X_test shape: "; for(auto &i: X_test.shape()) cout << i << ", "; cout << endl;
-// 	// cout << "Y_test shape: "; for(auto &i: Y_test.shape()) cout << i << ", "; cout << endl;
-
-// 	// Model
-// 	model->compile(new GradientDescentOptimizer(0.01), new CrossEntropy(), { LOSS, ACCURACY });
-// 	vector<map<string, double>> results;
-// 	for (int i = 0; i < epochs; ++i) {
-// 		map<string, double> result;
-// 		auto training_result = model->fit(X_train, Y_train, 32, 1)[0];
-// 		result["train_loss"] = training_result["loss"];
-// 		result["train_accuracy"] = training_result["accuracy"];
-// 		auto testing_result = model->evaluate(X_test, Y_test, 1);
-// 		result["test_loss"] = testing_result["loss"];
-// 		result["test_accuracy"] = testing_result["accuracy"];
-// 		results.push_back(result);
-// 	}
-
-// 	Graph::deleteInstance();
-// 	return results;
-// }
-
-// vector<map<string, double>> mlp1(xt::pyarray<double>& X_train, xt::pyarray<double>& Y_train, xt::pyarray<double>& X_test, xt::pyarray<double>& Y_test, int epochs) {
-// 	auto model = new MLP1();
-// 	return run(model, X_train, Y_train, X_test, Y_test, epochs);
-// }
-
-// vector<map<string, double>> mlp2(xt::pyarray<double>& X_train, xt::pyarray<double>& Y_train, xt::pyarray<double>& X_test, xt::pyarray<double>& Y_test, int epochs) {
-// 	auto model = new MLP2();
-// 	return run(model, X_train, Y_train, X_test, Y_test, epochs);
-// }
 
 void test() {
-	py::print("CompuGraph Testing Version 0.0.1");
+	py::print("CompuGraph Testing Version 0.0.4");
 }
 
 void dot() {
 	py::print("Test BLAS and LAPACK");
 	Tensor t1 = {{1, 2}, {3, 4}};
 	Tensor t2 = {{5, 6}, {7, 8}};
-	cout << xt::linalg::dot(t1, t2);
+	cout << xt::linalg::dot(t1, t2) << endl;
 }
 
-vector<map<string, double>> mlp1(xt::pyarray<double>& _X_train, xt::pyarray<double>& _Y_train, xt::pyarray<double>& _X_test, xt::pyarray<double>& _Y_test, int epochs) {
-	Graph::initInstance();
 
-	Tensor X_train = _X_train, Y_train = _Y_train, X_test = _X_test, Y_test = _Y_test;
+vector<map<string, double>> run(Model *model, Tensor X_train, Tensor Y_train, Tensor X_test, Tensor Y_test, int epochs) {
+	// cout << "X_train shape: "; for(auto &i: X_train.shape()) cout << i << ", "; cout << endl;
+	// cout << "Y_train shape: "; for(auto &i: Y_train.shape()) cout << i << ", "; cout << endl;
+	// cout << "X_test shape: "; for(auto &i: X_test.shape()) cout << i << ", "; cout << endl;
+	// cout << "Y_test shape: "; for(auto &i: Y_test.shape()) cout << i << ", "; cout << endl;
 
 	// Model
-	Model *model = new MLP1();
 	model->compile(new GradientDescentOptimizer(0.01), new CrossEntropy(), { LOSS, ACCURACY });
 	vector<map<string, double>> results;
 	for (int i = 0; i < epochs; ++i) {
@@ -111,31 +76,21 @@ vector<map<string, double>> mlp1(xt::pyarray<double>& _X_train, xt::pyarray<doub
 		result["test_accuracy"] = testing_result["accuracy"];
 		results.push_back(result);
 	}
+	return results;
+}
 
+vector<map<string, double>> mlp1(xt::pyarray<double>& X_train, xt::pyarray<double>& Y_train, xt::pyarray<double>& X_test, xt::pyarray<double>& Y_test, int epochs) {
+	Graph::initInstance();
+	Model *model = new MLP1();
+	auto results = run(model, X_train, Y_train, X_test, Y_test, epochs);
 	Graph::deleteInstance();
 	return results;
 }
 
-vector<map<string, double>> mlp2(xt::pyarray<double>& _X_train, xt::pyarray<double>& _Y_train, xt::pyarray<double>& _X_test, xt::pyarray<double>& _Y_test, int epochs) {
+vector<map<string, double>> mlp2(xt::pyarray<double>& X_train, xt::pyarray<double>& Y_train, xt::pyarray<double>& X_test, xt::pyarray<double>& Y_test, int epochs) {
 	Graph::initInstance();
-
-	Tensor X_train = _X_train, Y_train = _Y_train, X_test = _X_test, Y_test = _Y_test;
-
-	// Model
 	Model *model = new MLP2();
-	model->compile(new GradientDescentOptimizer(0.01), new CrossEntropy(), { LOSS, ACCURACY });
-	vector<map<string, double>> results;
-	for (int i = 0; i < epochs; ++i) {
-		map<string, double> result;
-		auto training_result = model->fit(X_train, Y_train, 32, 1)[0];
-		result["train_loss"] = training_result["loss"];
-		result["train_accuracy"] = training_result["accuracy"];
-		auto testing_result = model->evaluate(X_test, Y_test, 1);
-		result["test_loss"] = testing_result["loss"];
-		result["test_accuracy"] = testing_result["accuracy"];
-		results.push_back(result);
-	}
-
+	auto results = run(model, X_train, Y_train, X_test, Y_test, epochs);
 	Graph::deleteInstance();
 	return results;
 }
@@ -144,7 +99,7 @@ vector<map<string, double>> mlp2(xt::pyarray<double>& _X_train, xt::pyarray<doub
 PYBIND11_MODULE(compugraph, m) {
 	xt::import_numpy();
 	
-	m.doc() = "pybind11 example plugin"; // optional module docstring
+	m.doc() = "CompuGraph - Simple Deep Learning Framework with Computational Graph"; // optional module docstring
 
 	m.def("test", &test, pyout(), "print the test version");
 	m.def("dot", &dot, pyout(), "test BLAS and LAPACK");

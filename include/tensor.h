@@ -10,6 +10,7 @@
 #include "xtensor/xio.hpp"
 #include "xtensor-blas/xlinalg.hpp"
 using namespace std;
+
 using Tensor = xt::xarray<double>;
 
 struct Batch {

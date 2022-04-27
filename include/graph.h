@@ -11,10 +11,10 @@ public:
 	void addVariable(Node *node);
 	void addOperation(Node *node);
 	static Tensor run(Node *operation, map<string, Tensor> feed_dict = {});
-	static Graph *initInstance(); // put this at the top of the main function
+	static Graph *initInstance(); // put this before any graphs or models created
 	static Graph *getInstance();
-	static void deleteInstance(); // put this at the end of the main function
-private:
+	static void deleteInstance(); // put this where you want to surely delete the whole graphs
+protected:
 	vector<Node *> m_placeholders;
 	vector<Node *> m_variables;
 	vector<Node *> m_operations;
