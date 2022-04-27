@@ -104,5 +104,5 @@ $RECYCLE.BIN/
 
 .vscode
 build
-data
-results
+examples/data
+examples/results

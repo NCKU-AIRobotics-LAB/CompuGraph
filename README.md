@@ -56,7 +56,7 @@ We use MNIST for demo.
 
 Before running the example, download [MNIST](http://yann.lecun.com/exdb/mnist/) data to `data` directory first.
 
-Run `python mnist_example.py` to see the result, and check `python/compugraph.cpp` for network information.
+Run `python mnist_example.py` in the `examples` folder to see the result, and check `python/compugraph.cpp` for network information.
 
 ### First Network
 Network:
@@ -81,11 +81,11 @@ Result:
 
 Training (Accuracy: 0.9963, used time: about 55s)
 
-![](imgs/train_1.png)
+![](docs/imgs/train_1.png)
 
 Testing (Accuracy: 0.9802)
 
-![](imgs/test_1.png)
+![](docs/imgs/test_1.png)
 
 ### Second Network
 Network:
@@ -111,11 +111,11 @@ Result:
 
 Training (Accuracy: 0.9904, used time: about 65s)
 
-![](imgs/train_2.png)
+![](docs/imgs/train_2.png)
 
 Testing (Accuracy: 0.9817)
 
-![](imgs/test_2.png)
+![](docs/imgs/test_2.png)
 
 
 ## More Information

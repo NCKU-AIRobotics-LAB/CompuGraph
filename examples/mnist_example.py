@@ -3,7 +3,7 @@ import numpy as np
 import os
 from urllib.request import urlretrieve
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), 'build'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../build'))
 from compugraph import mlp1, mlp2
 import matplotlib.pyplot as plt
 
