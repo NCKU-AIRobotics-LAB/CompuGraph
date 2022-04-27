@@ -3,6 +3,9 @@ project(COMPUGRAPH)
 
 include(ExternalProject)
 
+set(COMPUGRAPH_HEADER_DIR ${COMPUGRAPH_SOURCE_DIR}/include)
+set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -13,6 +16,7 @@ if (MVSC)
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast -ffast-math")
 endif()
+
 # xsimd and TBB OpenMP dependencies are automatically searched when the following is executed
 set(XTENSOR_USE_XSIMD ON)
 add_definitions(-DXTENSOR_USE_XSIMD)
@@ -31,10 +35,6 @@ endif()
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads)
-
-set(COMPUGRAPH_HEADER_DIR ${COMPUGRAPH_SOURCE_DIR}/include)
-set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
-
 
 # OpenBLAS
 set(BLA_VENDOR OpenBLAS)
@@ -73,6 +73,7 @@ else()
     set(lapackblas_libraries Threads::Threads)
   endif()
 endif()
+
 # XTensor
 find_package(xtl QUIET)
 if(xtl_FOUND)
@@ -130,26 +131,4 @@ link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
 
 add_subdirectory(src)
 add_subdirectory(test)
-
-find_package(pybind11 CONFIG QUIET)
-if(pybind11_FOUND)
-  include_directories(${COMPUGRAPH_HEADER_DIR})
-  FILE(GLOB PYBIND_SOURCES python/**.cpp)
-  find_package(Python3 ${PYBIND11_PYTHON_VERSION} COMPONENTS NumPy REQUIRED)
-  pybind11_add_module(compugraph ${PYBIND_SOURCES})
-  target_link_libraries(compugraph PUBLIC cg Python3::NumPy)
-
-  # for xsimd
-  if(WIN32)
-  set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
-  if(HAVE_AVX2_EXTENSIONS AND NOT MSVC_VERSION LESS 1800)
-    target_compile_options(compugraph PRIVATE /arch:AVX2)
-  elseif(HAVE_AVX_EXTENSIONS AND NOT MSVC_VERSION LESS 1600)
-    target_compile_options(compugraph PRIVATE /arch:AVX)
-  elseif(ARCH STREQUAL "arm")
-    target_compile_options(compugraph PRIVATE /arch:ARMv7VE)
-  endif()
-  else()
-  target_compile_options(compugraph PRIVATE -march=native)
-  endif()
-endif()
+add_subdirectory(python)
