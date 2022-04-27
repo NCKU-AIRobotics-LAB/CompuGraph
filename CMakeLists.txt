@@ -29,85 +29,125 @@ if(OPENMP_FOUND)
   add_definitions(-DXTENSOR_USE_OPENMP)
 endif()
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads)
+
 set(COMPUGRAPH_HEADER_DIR ${COMPUGRAPH_SOURCE_DIR}/include)
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
 
 # OpenBLAS
-if (DEFINED WIN32)
-  ExternalProject_Add(openblas
-    URL http://github.com/xianyi/OpenBLAS/archive/v0.3.20.tar.gz
-    CMAKE_GENERATOR "MSYS Makefiles"
-    CONFIGURE_COMMAND ""
-    BUILD_IN_SOURCE 1
-    BUILD_COMMAND make -j${JJ} CMAKE_GNUtoMS=ON BUILD_SHARED_LIBS=ON CMAKE_BUILD_TYPE=Release NOFORTRAN=1 NO_LAPACK=1
-  )
+set(BLA_VENDOR OpenBLAS)
+find_package(BLAS QUIET)
+find_package(LAPACK QUIET)
+if(BLAS_FOUND AND LAPACK_FOUND)
+  set(lapackblas_libraries ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES} Threads::Threads)
+  add_custom_target(openblas)
 else()
-  ExternalProject_Add(openblas
-    URL http://github.com/xianyi/OpenBLAS/archive/v0.3.20.tar.gz
-    CONFIGURE_COMMAND ""
-    BUILD_IN_SOURCE 1
-    BUILD_COMMAND make -j${JJ} BUILD_SHARED_LIBS=ON CMAKE_BUILD_TYPE=Release NOFORTRAN=1 NO_LAPACK=1
-    INSTALL_COMMAND make PREFIX=${EXTERNAL_INSTALL_LOCATION} install
-  )
+  set(BLA_VENDOR All)
+  find_package(BLAS QUIET)
+  find_package(LAPACK QUIET)
+  if(BLAS_FOUND AND LAPACK_FOUND)
+    set(lapackblas_libraries ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES} Threads::Threads)
+    add_custom_target(openblas)
+  else()
+    if (DEFINED WIN32)
+      ExternalProject_Add(openblas
+        URL http://github.com/xianyi/OpenBLAS/archive/v0.3.6.tar.gz
+        CMAKE_GENERATOR "MSYS Makefiles"
+        CONFIGURE_COMMAND ""
+        BUILD_IN_SOURCE 1
+        BUILD_COMMAND make -j${JJ} CMAKE_GNUtoMS=ON BUILD_SHARED_LIBS=ON CMAKE_BUILD_TYPE=Release
+      )
+    else()
+      ExternalProject_Add(openblas
+        URL http://github.com/xianyi/OpenBLAS/archive/v0.3.6.tar.gz
+        CONFIGURE_COMMAND ""
+        BUILD_IN_SOURCE 1
+        BUILD_COMMAND make -j${JJ} BUILD_SHARED_LIBS=ON CMAKE_BUILD_TYPE=Release
+        INSTALL_COMMAND make PREFIX=${EXTERNAL_INSTALL_LOCATION} install
+      )
+    endif()
+    set(lapackblas_libraries Threads::Threads)
+  endif()
 endif()
 # XTensor
-ExternalProject_Add(xtl
-  GIT_REPOSITORY https://github.com/xtensor-stack/xtl
-  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-  DEPENDS openblas
-)
-ExternalProject_Add(xsimd
-  GIT_REPOSITORY https://github.com/xtensor-stack/xsimd
-  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-  DEPENDS xtl
-)
-ExternalProject_Add(xtensor
-  GIT_REPOSITORY https://github.com/xtensor-stack/xtensor
-  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DXTENSOR_USE_XSIMD=${XTENSOR_USE_XSIMD} -DXTENSOR_USE_TBB=${XTENSOR_USE_TBB} -DXTENSOR_USE_OPENMP=${XTENSOR_USE_OPENMP}
-  DEPENDS xsimd
-)
-ExternalProject_Add(xtensor-blas
-  GIT_REPOSITORY https://github.com/xtensor-stack/xtensor-blas
-  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-  DEPENDS xtensor
-)
-ExternalProject_Add(xtensor-python
-  GIT_REPOSITORY https://github.com/xtensor-stack/xtensor-python
-  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DPYBIND11_PYTHON_VERSION=${PYBIND11_PYTHON_VERSION}
-  DEPENDS xtensor-blas
-)
+find_package(xtl QUIET)
+if(xtl_FOUND)
+  add_custom_target(xtl)
+else()
+  ExternalProject_Add(xtl
+    GIT_REPOSITORY https://github.com/xtensor-stack/xtl
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+    DEPENDS openblas
+  )
+endif()
+find_package(xsimd QUIET)
+if(xsimd_FOUND)
+  add_custom_target(xsimd)
+else()
+  ExternalProject_Add(xsimd
+    GIT_REPOSITORY https://github.com/xtensor-stack/xsimd
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+    DEPENDS xtl
+  )
+endif()
+find_package(xtensor QUIET)
+if(xtensor_FOUND)
+  add_custom_target(xtensor)
+else()
+  ExternalProject_Add(xtensor
+    GIT_REPOSITORY https://github.com/xtensor-stack/xtensor
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DXTENSOR_USE_XSIMD=${XTENSOR_USE_XSIMD} -DXTENSOR_USE_TBB=${XTENSOR_USE_TBB} -DXTENSOR_USE_OPENMP=${XTENSOR_USE_OPENMP}
+    DEPENDS xsimd
+  )
+endif()
+find_package(xtensor-blas QUIET)
+if(xtensor-blas_FOUND)
+  add_custom_target(xtensor-blas)
+else()
+  ExternalProject_Add(xtensor-blas
+    GIT_REPOSITORY https://github.com/xtensor-stack/xtensor-blas
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+    DEPENDS xtensor
+  )
+endif()
+find_package(xtensor-python QUIET)
+if(xtensor-python_FOUND)
+  add_custom_target(xtensor-python)
+else()
+  ExternalProject_Add(xtensor-python
+    GIT_REPOSITORY https://github.com/xtensor-stack/xtensor-python
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DPYBIND11_PYTHON_VERSION=${PYBIND11_PYTHON_VERSION}
+    DEPENDS xtensor-blas
+  )
+endif()
 
 include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
 link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
-
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads)
-find_package(LAPACK)
-if(LAPACK_FOUND)
-	set(lapackblas_libraries ${LAPACK_LIBRARIES} Threads::Threads)
-endif()
 
 add_subdirectory(src)
 add_subdirectory(test)
 
 find_package(pybind11 CONFIG REQUIRED)
-include_directories(${COMPUGRAPH_HEADER_DIR})
-FILE(GLOB PYBIND_SOURCES python/**.cpp)
-find_package(Python3 ${PYBIND11_PYTHON_VERSION} COMPONENTS NumPy REQUIRED)
-pybind11_add_module(compugraph ${PYBIND_SOURCES})
-target_link_libraries(compugraph PUBLIC cg Python3::NumPy)
+if(pybind11_FOUND)
+  include_directories(${COMPUGRAPH_HEADER_DIR})
+  FILE(GLOB PYBIND_SOURCES python/**.cpp)
+  find_package(Python3 ${PYBIND11_PYTHON_VERSION} COMPONENTS NumPy REQUIRED)
+  pybind11_add_module(compugraph ${PYBIND_SOURCES})
+  target_link_libraries(compugraph PUBLIC cg Python3::NumPy)
 
-# for xsimd
-if(WIN32)
-	set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
-	if(HAVE_AVX2_EXTENSIONS AND NOT MSVC_VERSION LESS 1800)
-		target_compile_options(compugraph PRIVATE /arch:AVX2)
-	elseif(HAVE_AVX_EXTENSIONS AND NOT MSVC_VERSION LESS 1600)
-		target_compile_options(compugraph PRIVATE /arch:AVX)
-	elseif(ARCH STREQUAL "arm")
-		target_compile_options(compugraph PRIVATE /arch:ARMv7VE)
-	endif()
-else()
-	target_compile_options(compugraph PRIVATE -march=native)
+  # for xsimd
+  if(WIN32)
+  set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
+  if(HAVE_AVX2_EXTENSIONS AND NOT MSVC_VERSION LESS 1800)
+    target_compile_options(compugraph PRIVATE /arch:AVX2)
+  elseif(HAVE_AVX_EXTENSIONS AND NOT MSVC_VERSION LESS 1600)
+    target_compile_options(compugraph PRIVATE /arch:AVX)
+  elseif(ARCH STREQUAL "arm")
+    target_compile_options(compugraph PRIVATE /arch:ARMv7VE)
+  endif()
+  else()
+  target_compile_options(compugraph PRIVATE -march=native)
+  endif()
 endif()
