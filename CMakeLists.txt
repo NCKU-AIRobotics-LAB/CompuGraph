@@ -32,38 +32,60 @@ endif()
 set(COMPUGRAPH_HEADER_DIR ${COMPUGRAPH_SOURCE_DIR}/include)
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
+
+# OpenBLAS
+if (DEFINED WIN32)
+  ExternalProject_Add(openblas
+    URL http://github.com/xianyi/OpenBLAS/archive/v0.3.20.tar.gz
+    CMAKE_GENERATOR "MSYS Makefiles"
+    CONFIGURE_COMMAND ""
+    BUILD_IN_SOURCE 1
+    BUILD_COMMAND make -j${JJ} CMAKE_GNUtoMS=ON BUILD_SHARED_LIBS=ON CMAKE_BUILD_TYPE=Release NOFORTRAN=1 NO_LAPACK=1
+  )
+else()
+  ExternalProject_Add(openblas
+    URL http://github.com/xianyi/OpenBLAS/archive/v0.3.20.tar.gz
+    CONFIGURE_COMMAND ""
+    BUILD_IN_SOURCE 1
+    BUILD_COMMAND make -j${JJ} BUILD_SHARED_LIBS=ON CMAKE_BUILD_TYPE=Release NOFORTRAN=1 NO_LAPACK=1
+    INSTALL_COMMAND make PREFIX=${EXTERNAL_INSTALL_LOCATION} install
+  )
+endif()
+# XTensor
 ExternalProject_Add(xtl
-    GIT_REPOSITORY https://github.com/xtensor-stack/xtl
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} 
+  GIT_REPOSITORY https://github.com/xtensor-stack/xtl
+  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+  DEPENDS openblas
 )
 ExternalProject_Add(xsimd
-    GIT_REPOSITORY https://github.com/xtensor-stack/xsimd
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-		DEPENDS xtl
+  GIT_REPOSITORY https://github.com/xtensor-stack/xsimd
+  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+  DEPENDS xtl
 )
 ExternalProject_Add(xtensor
-    GIT_REPOSITORY https://github.com/xtensor-stack/xtensor
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DXTENSOR_USE_XSIMD=${XTENSOR_USE_XSIMD} -DXTENSOR_USE_TBB=${XTENSOR_USE_TBB} -DXTENSOR_USE_OPENMP=${XTENSOR_USE_OPENMP}
-		DEPENDS xsimd
+  GIT_REPOSITORY https://github.com/xtensor-stack/xtensor
+  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DXTENSOR_USE_XSIMD=${XTENSOR_USE_XSIMD} -DXTENSOR_USE_TBB=${XTENSOR_USE_TBB} -DXTENSOR_USE_OPENMP=${XTENSOR_USE_OPENMP}
+  DEPENDS xsimd
 )
 ExternalProject_Add(xtensor-blas
-    GIT_REPOSITORY https://github.com/xtensor-stack/xtensor-blas
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-		DEPENDS xtensor
+  GIT_REPOSITORY https://github.com/xtensor-stack/xtensor-blas
+  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+  DEPENDS xtensor
 )
 ExternalProject_Add(xtensor-python
-    GIT_REPOSITORY https://github.com/xtensor-stack/xtensor-python
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DPYBIND11_PYTHON_VERSION=${PYBIND11_PYTHON_VERSION}
-		DEPENDS xtensor-blas
+  GIT_REPOSITORY https://github.com/xtensor-stack/xtensor-python
+  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DPYBIND11_PYTHON_VERSION=${PYBIND11_PYTHON_VERSION}
+  DEPENDS xtensor-blas
 )
 
 include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
 link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
 
-find_package(BLAS)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads)
 find_package(LAPACK)
-if(LAPACK_FOUND AND BLAS_FOUND)
-	set(lapackblas_libraries ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+if(LAPACK_FOUND)
+	set(lapackblas_libraries ${LAPACK_LIBRARIES} Threads::Threads)
 endif()
 
 add_subdirectory(src)
