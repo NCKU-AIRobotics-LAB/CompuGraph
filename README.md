@@ -75,17 +75,44 @@ Training data size: 60000
 Testing data size: 10000
 Batch size: 32
 Epochs: 10
+Validation split ratio: 0.2
 ```
 
 Result:
 
-Training (Accuracy: 0.9963, used time: about 55s)
+Training (Accuracy: 0.9782, used time: about 53s)
 
 ![](docs/imgs/train_1.png)
 
-Testing (Accuracy: 0.9802)
+Testing (Accuracy: 0.9637)
 
 ![](docs/imgs/test_1.png)
+
+Outputs:
+```
+Epoch 1/10
+376/375 [==============================] - loss: 2.84888 - accuracy: 0.929019 - val_loss: 2.89861 - val_accuracy: 0.925487
+Epoch 2/10
+376/375 [==============================] - loss: 2.25355 - accuracy: 0.94949 - val_loss: 2.10567 - val_accuracy: 0.943968
+Epoch 3/10
+376/375 [==============================] - loss: 1.89424 - accuracy: 0.95864 - val_loss: 1.80724 - val_accuracy: 0.948925
+Epoch 4/10
+376/375 [==============================] - loss: 1.90859 - accuracy: 0.956509 - val_loss: 2.06167 - val_accuracy: 0.946909
+Epoch 5/10
+376/375 [==============================] - loss: 1.35808 - accuracy: 0.970296 - val_loss: 1.22512 - val_accuracy: 0.957913
+Epoch 6/10
+376/375 [==============================] - loss: 1.33307 - accuracy: 0.973826 - val_loss: 1.17582 - val_accuracy: 0.959677
+Epoch 7/10
+376/375 [==============================] - loss: 1.51062 - accuracy: 0.967183 - val_loss: 1.29992 - val_accuracy: 0.953965
+Epoch 8/10
+376/375 [==============================] - loss: 1.2688 - accuracy: 0.97485 - val_loss: 1.30519 - val_accuracy: 0.958165
+Epoch 9/10
+376/375 [==============================] - loss: 1.219 - accuracy: 0.977461 - val_loss: 1.08566 - val_accuracy: 0.96161
+Epoch 10/10
+376/375 [==============================] - loss: 1.15905 - accuracy: 0.978213 - val_loss: 0.954418 - val_accuracy: 0.957913
+Testing
+313/313 [==============================] - loss: 0.26099 - accuracy: 0.9637265
+```
 
 ### Second Network
 Network:
@@ -105,17 +132,44 @@ Training data size: 60000
 Testing data size: 10000
 Batch size: 32
 Epochs: 10
+Validation split ratio: 0.2
 ```
 
 Result:
 
-Training (Accuracy: 0.9904, used time: about 65s)
+Training (Accuracy: 0.9729, used time: about 58s)
 
 ![](docs/imgs/train_2.png)
 
-Testing (Accuracy: 0.9817)
+Testing (Accuracy: 0.9606)
 
 ![](docs/imgs/test_2.png)
+
+Outputs:
+```
+Epoch 1/10
+376/375 [==============================] - loss: 2.24544 - accuracy: 0.865015 - val_loss: 2.25551 - val_accuracy: 0.862987
+Epoch 2/10
+376/375 [==============================] - loss: 2.868 - accuracy: 0.925259 - val_loss: 2.88714 - val_accuracy: 0.915827
+Epoch 3/10
+376/375 [==============================] - loss: 2.39219 - accuracy: 0.945793 - val_loss: 2.2763 - val_accuracy: 0.941364
+Epoch 4/10
+376/375 [==============================] - loss: 2.14042 - accuracy: 0.948926 - val_loss: 2.2506 - val_accuracy: 0.942036
+Epoch 5/10
+376/375 [==============================] - loss: 1.5262 - accuracy: 0.958995 - val_loss: 1.44461 - val_accuracy: 0.949933
+Epoch 6/10
+376/375 [==============================] - loss: 1.26316 - accuracy: 0.970421 - val_loss: 1.29571 - val_accuracy: 0.959005
+Epoch 7/10
+376/375 [==============================] - loss: 1.35879 - accuracy: 0.965888 - val_loss: 1.27213 - val_accuracy: 0.952117
+Epoch 8/10
+376/375 [==============================] - loss: 1.23391 - accuracy: 0.967288 - val_loss: 1.04896 - val_accuracy: 0.954637
+Epoch 9/10
+376/375 [==============================] - loss: 1.14298 - accuracy: 0.975017 - val_loss: 0.924099 - val_accuracy: 0.960433
+Epoch 10/10
+376/375 [==============================] - loss: 1.12197 - accuracy: 0.972949 - val_loss: 0.99669 - val_accuracy: 0.961358
+Testing
+313/313 [==============================] - loss: 0.275588 - accuracy: 0.960611
+```
 
 
 ## More Information

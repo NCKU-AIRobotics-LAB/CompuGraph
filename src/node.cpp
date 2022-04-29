@@ -391,7 +391,7 @@ vector<Tensor> Sigmoid::gradient(Tensor grad_back) {
 Softmax::Softmax(Node *input_node): Operation(SOFTMAX, input_node) {}
 
 Tensor Softmax::compute() {
-	Tensor &a = getInputNodes()[0]->getOutput();
+	Tensor &a = getInputNodes()[0]->getOutput(); // This should be a 2-D matrix
 	return xt::exp(a) / xt::view(xt::sum(xt::exp(a), 1), xt::all(), xt::newaxis());
 }
 

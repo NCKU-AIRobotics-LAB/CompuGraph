@@ -34,8 +34,8 @@ void test_mlp1() {
 	// MLP model
 	MLP1 *model = new MLP1();
 	model->compile(new GradientDescentOptimizer(0.03), new CrossEntropy(), { LOSS, ACCURACY });
-	model->fit(X, Y, 5, 2, true, true);
-	model->evaluate(X, Y, 1, true);
+	model->fit(X, Y, 5, 2, true);
+	model->evaluate(X, Y, 1);
 	Tensor x({2, 2});
 	cout << "Prediction of (2, 2): " << model->predict(x) << endl;
 	cout << "Prediction of (2, 2) in index: " << model->predict_index(x) << endl;

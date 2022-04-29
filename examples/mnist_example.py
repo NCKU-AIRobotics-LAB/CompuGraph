@@ -7,6 +7,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../build'))
 from compugraph import mlp1, mlp2
 import matplotlib.pyplot as plt
 
+result_path = os.path.join(os.path.dirname(__file__), 'results')
+
 # train-images-idx3-ubyte.gz: training set images (9912422 bytes)
 # train-labels-idx1-ubyte.gz: training set labels (28881 bytes)
 # t10k-images-idx3-ubyte.gz: test set images (1648877 bytes)
@@ -70,49 +72,51 @@ Y_train = train_labels.astype(np.float32)
 X_test = (test_images.reshape(test_images.shape[0], -1) / 255.0).astype(np.float64)
 Y_test = test_labels.astype(np.float64)
 
-if (not os.path.exists('results')):
-    os.makedirs('results')
+if (not os.path.exists(result_path)):
+    os.makedirs(result_path)
 
 print('X_train shape:', X_train.shape)
 print('Y_train shape:', Y_train.shape)
 print('X_test shape:', X_test.shape)
 print('Y_test shape:', Y_test.shape)
 
-results = mlp1(X_train, Y_train, X_test, Y_test, 10)
-print(results)
+print('\nMLP1:\n')
 
-x = list(range(1, len(results) + 1))
-train_err = [1 - result['train_accuracy'] for result in results]
-test_err = [1 - result['test_accuracy'] for result in results]
+results = mlp1(X_train, Y_train, X_test, Y_test, 10)
+
+x = list(range(1, len(results)))
+train_err = [1 - results[i]['accuracy'] for i in range(0, len(results) - 1)]
+val_err = [1 - results[i]['val_accuracy'] for i in range(0, len(results) - 1)]
 
 plt.figure(1)
 plt.plot(x, train_err)
 plt.xlabel('epoch')
 plt.ylabel('Training Error')
-plt.savefig('results/train_1.png')
+plt.savefig(os.path.join(result_path, 'train_1.png'))
 
 plt.figure(2)
-plt.plot(x, test_err)
+plt.plot(x, val_err)
 plt.xlabel('epoch')
-plt.ylabel('Testing Error')
-plt.savefig('results/test_1.png')
+plt.ylabel('Validation Error')
+plt.savefig(os.path.join(result_path, 'test_1.png'))
 
 
+print('\nMLP2:\n')
 
 results = mlp2(X_train, Y_train, X_test, Y_test, 10)
-print(results)
 
-train_err = [1 - result['train_accuracy'] for result in results]
-test_err = [1 - result['test_accuracy'] for result in results]
+x = list(range(1, len(results)))
+train_err = [1 - results[i]['accuracy'] for i in range(0, len(results) - 1)]
+val_err = [1 - results[i]['val_accuracy'] for i in range(0, len(results) - 1)]
 
 plt.figure(3)
 plt.plot(x, train_err)
 plt.xlabel('epoch')
 plt.ylabel('Training Error')
-plt.savefig('results/train_2.png')
+plt.savefig(os.path.join(result_path, 'train_2.png'))
 
 plt.figure(4)
-plt.plot(x, test_err)
+plt.plot(x, val_err)
 plt.xlabel('epoch')
 plt.ylabel('Testing Error')
-plt.savefig('results/test_2.png')
+plt.savefig(os.path.join(result_path, 'test_2.png'))

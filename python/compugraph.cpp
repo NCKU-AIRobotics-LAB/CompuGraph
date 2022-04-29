@@ -46,7 +46,7 @@ protected:
 
 
 void test() {
-	py::print("CompuGraph Testing Version 0.0.4");
+	py::print("CompuGraph Testing Version 0.0.5");
 }
 
 void dot() {
@@ -65,17 +65,15 @@ vector<map<string, double>> run(Model *model, Tensor X_train, Tensor Y_train, Te
 
 	// Model
 	model->compile(new GradientDescentOptimizer(0.01), new CrossEntropy(), { LOSS, ACCURACY });
-	vector<map<string, double>> results;
-	for (int i = 0; i < epochs; ++i) {
-		map<string, double> result;
-		auto training_result = model->fit(X_train, Y_train, 128, 1)[0];
-		result["train_loss"] = training_result["loss"];
-		result["train_accuracy"] = training_result["accuracy"];
-		auto testing_result = model->evaluate(X_test, Y_test, 32);
-		result["test_loss"] = testing_result["loss"];
-		result["test_accuracy"] = testing_result["accuracy"];
-		results.push_back(result);
-	}
+
+	auto results = model->fit(X_train, Y_train, 128, epochs, true, 0.2);
+
+	auto testing_result = model->evaluate(X_test, Y_test, 32);
+	map<string, double> result;
+	result["test_loss"] = testing_result["loss"];
+	result["test_accuracy"] = testing_result["accuracy"];
+	results.push_back(result);
+
 	return results;
 }
 
