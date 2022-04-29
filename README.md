@@ -78,15 +78,17 @@ Epochs: 10
 Validation split ratio: 0.2
 ```
 
-Result:
+Result (used time: about 53s):
 
-Training (Accuracy: 0.9782, used time: about 53s)
+Training (Accuracy: 0.9782)
 
 ![](docs/imgs/train_1.png)
 
-Testing (Accuracy: 0.9637)
+Validation (Accuracy: 0.9579)
 
-![](docs/imgs/test_1.png)
+![](docs/imgs/val_1.png)
+
+Testing (Accuracy: 0.9637)
 
 Outputs:
 ```
@@ -135,15 +137,18 @@ Epochs: 10
 Validation split ratio: 0.2
 ```
 
-Result:
+Result (used time: about 58s):
 
-Training (Accuracy: 0.9729, used time: about 58s)
+Training (Accuracy: 0.9729)
 
 ![](docs/imgs/train_2.png)
 
+Validation (Accuracy: 0.9613)
+
+![](docs/imgs/val_2.png)
+
 Testing (Accuracy: 0.9606)
 
-![](docs/imgs/test_2.png)
 
 Outputs:
 ```

@@ -3,6 +3,7 @@
 
 #include <set>
 #include "graph.h"
+#include "dataset.h"
 
 enum Metric { LOSS, ACCURACY, MSE };
 
