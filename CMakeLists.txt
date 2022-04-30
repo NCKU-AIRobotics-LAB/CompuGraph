@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 project(COMPUGRAPH)
 
 include(ExternalProject)
+include(FetchContent)
 
 set(COMPUGRAPH_HEADER_DIR ${COMPUGRAPH_SOURCE_DIR}/include)
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
@@ -11,8 +12,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # The same as xtensor::optimize, but we are using manually config now
-if (MVSC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:fast")
+if (MSVC)
+  set(CMAKE_CXX_STANDARD 20)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:fast /w")
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast -ffast-math -fcompare-debug-second")
 endif()
@@ -54,22 +56,26 @@ else()
     add_custom_target(openblas)
     message("Using Default BLAS: " ${BLAS_LIBRARIES})
   else()
-    if (DEFINED WIN32)
-      ExternalProject_Add(openblas
-        URL http://github.com/xianyi/OpenBLAS/archive/v0.3.6.tar.gz
-        CMAKE_GENERATOR "MSYS Makefiles"
-        CONFIGURE_COMMAND ""
-        BUILD_IN_SOURCE 1
-        BUILD_COMMAND make -j${JJ} CMAKE_GNUtoMS=ON BUILD_SHARED_LIBS=ON CMAKE_BUILD_TYPE=Release
-      )
+    message("Downloading binary OpenBLAS, if you want to build from source, please build it yourself and run CMake again.")
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
+      set(X86 TRUE)
     else()
-      ExternalProject_Add(openblas
-        URL http://github.com/xianyi/OpenBLAS/archive/v0.3.6.tar.gz
-        CONFIGURE_COMMAND ""
-        BUILD_IN_SOURCE 1
-        BUILD_COMMAND make -j${JJ} BUILD_SHARED_LIBS=ON CMAKE_BUILD_TYPE=Release
-        INSTALL_COMMAND make PREFIX=${EXTERNAL_INSTALL_LOCATION} install
+      set(X86 FALSE)
+    endif()
+    if (X86)
+      FetchContent_Declare(openblas
+        URL https://github.com/xianyi/OpenBLAS/releases/download/v0.3.20/OpenBLAS-0.3.20-x86.zip
+        SOURCE_DIR ${EXTERNAL_INSTALL_LOCATION}
       )
+      FetchContent_MakeAvailable(openblas)
+      add_custom_target(openblas)
+    else()
+      FetchContent_Declare(openblas
+        URL https://github.com/xianyi/OpenBLAS/releases/download/v0.3.20/OpenBLAS-0.3.20-x64.zip
+        SOURCE_DIR ${EXTERNAL_INSTALL_LOCATION}
+      )
+      FetchContent_MakeAvailable(openblas)
+      add_custom_target(openblas)
     endif()
     set(lapackblas_libraries Threads::Threads)
   endif()

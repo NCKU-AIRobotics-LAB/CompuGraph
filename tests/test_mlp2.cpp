@@ -9,7 +9,7 @@ public:
 	Node *forward(Node *X) {
 		X = fc1->forward(X);
 		X = fc2->forward(X);
-		auto Y = new Softmax(X);
+		Node *Y = new Softmax(X);
 		return Y;
 	}
 private:
@@ -37,10 +37,10 @@ void test_mlp2() {
 	vector<map<string, double>> results;
 	for (int i = 0; i < 10; ++i) {
 		map<string, double> result;
-		auto training_result = model->fit(X, Y, 5, 1)[0];
+		map<string, double> training_result = model->fit(X, Y, 5, 1)[0];
 		result["train_loss"] = training_result["loss"];
 		result["train_accuracy"] = training_result["accuracy"];
-		auto testing_result = model->evaluate(X, Y, 1);
+		map<string, double> testing_result = model->evaluate(X, Y, 1);
 		result["test_loss"] = training_result["loss"];
 		result["test_accuracy"] = training_result["accuracy"];
 		results.push_back(result);
