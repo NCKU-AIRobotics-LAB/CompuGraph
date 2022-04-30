@@ -133,5 +133,6 @@ setup(
     install_requires=[
         'cmake>=3.14',
         'pybind11[global]',
+        'numpy'
     ]
 )

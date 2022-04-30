@@ -1,7 +1,7 @@
 include_directories(${COMPUGRAPH_HEADER_DIR})
 FILE(GLOB COMPUGRAPH_SOURCES ./**.cpp)
 add_library(cg ${COMPUGRAPH_SOURCES})
-target_link_libraries(cg ${lapackblas_libraries})
+target_link_libraries(cg ${lapackblas_libraries} ${tbb_libraries})
 add_dependencies(cg xtensor-python)
 
 # for xsimd
