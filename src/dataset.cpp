@@ -37,7 +37,11 @@ Batch Dataset::getBatch() {
 	xt::xarray<int> ids = xt::view(perm, xt::range(m_index, m_index + m_batch_size));
 	m_index += m_batch_size;
 	
-	return Batch({ .X = xt::dynamic_view(m_X, { xt::keep(ids), xt::ellipsis() }), .Y = xt::dynamic_view(m_Y, { xt::keep(ids), xt::ellipsis() }), .size = m_batch_size });
+	Batch batch;
+	batch.X = xt::dynamic_view(m_X, { xt::keep(ids), xt::ellipsis() });
+	batch.Y = xt::dynamic_view(m_Y, { xt::keep(ids), xt::ellipsis() });
+	batch.size = m_batch_size;
+	return batch;
 }
 
 int Dataset::getEpoch() {
