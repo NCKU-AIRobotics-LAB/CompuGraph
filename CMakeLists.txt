@@ -14,7 +14,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 if (MVSC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:fast")
 else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast -ffast-math")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast -ffast-math -fcompare-debug-second")
 endif()
 
 # xsimd and TBB OpenMP dependencies are automatically searched when the following is executed
@@ -44,7 +44,7 @@ find_package(LAPACK QUIET)
 if(BLAS_FOUND AND LAPACK_FOUND)
   set(lapackblas_libraries ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES} Threads::Threads)
   add_custom_target(openblas)
-  message(Using OpenBLAS: ${BLAS_LIBRARIES})
+  message("Using OpenBLAS: " ${BLAS_LIBRARIES})
 else()
   set(BLA_VENDOR All)
   find_package(BLAS QUIET)
@@ -52,7 +52,7 @@ else()
   if(BLAS_FOUND AND LAPACK_FOUND)
     set(lapackblas_libraries ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES} cblas Threads::Threads)
     add_custom_target(openblas)
-    message(Using Default BLAS: ${BLAS_LIBRARIES})
+    message("Using Default BLAS: " ${BLAS_LIBRARIES})
   else()
     if (DEFINED WIN32)
       ExternalProject_Add(openblas
@@ -116,15 +116,20 @@ else()
     DEPENDS xtensor
   )
 endif()
-find_package(xtensor-python QUIET)
-if(xtensor-python_FOUND)
-  add_custom_target(xtensor-python)
+find_package(pybind11 CONFIG QUIET)
+if(pybind11_FOUND)
+  find_package(xtensor-python QUIET)
+  if(xtensor-python_FOUND)
+    add_custom_target(xtensor-python)
+  else()
+    ExternalProject_Add(xtensor-python
+      GIT_REPOSITORY https://github.com/xtensor-stack/xtensor-python
+      CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DPYBIND11_PYTHON_VERSION=${PYBIND11_PYTHON_VERSION}
+      DEPENDS xtensor-blas
+    )
+  endif()
 else()
-  ExternalProject_Add(xtensor-python
-    GIT_REPOSITORY https://github.com/xtensor-stack/xtensor-python
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DPYBIND11_PYTHON_VERSION=${PYBIND11_PYTHON_VERSION}
-    DEPENDS xtensor-blas
-  )
+  message("Cannot find pybind11, install by pip install pybind11[global] or just build the cg library.")
 endif()
 
 include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
