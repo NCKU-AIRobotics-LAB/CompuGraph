@@ -56,19 +56,14 @@ else()
     message("Using Default BLAS: " ${BLAS_LIBRARIES})
   else()
     message("Downloading binary OpenBLAS, if you want to build from source, please build it yourself and run CMake again.")
-    if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
-      set(X86 TRUE)
-    else()
-      set(X86 FALSE)
-    endif()
-    if (X86)
+    if (CMAKE_SIZEOF_VOID_P EQUAL 4)
       FetchContent_Declare(openblas
         URL https://github.com/xianyi/OpenBLAS/releases/download/v0.3.20/OpenBLAS-0.3.20-x86.zip
         SOURCE_DIR ${EXTERNAL_INSTALL_LOCATION}
       )
       FetchContent_MakeAvailable(openblas)
       add_custom_target(openblas)
-    else()
+    else(CMAKE_SIZEOF_VOID_P EQUAL 8)
       FetchContent_Declare(openblas
         URL https://github.com/xianyi/OpenBLAS/releases/download/v0.3.20/OpenBLAS-0.3.20-x64.zip
         SOURCE_DIR ${EXTERNAL_INSTALL_LOCATION}
@@ -76,7 +71,7 @@ else()
       FetchContent_MakeAvailable(openblas)
       add_custom_target(openblas)
     endif()
-    set(lapackblas_libraries Threads::Threads)
+    set(lapackblas_libraries libopenblas Threads::Threads)
   endif()
 endif()
 

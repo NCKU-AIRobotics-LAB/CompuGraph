@@ -34,7 +34,10 @@ cmake .. -DPYBIND11_PYTHON_VERSION=3.8
 make
 ```
 Note: The `3.8` part can change to the Python version you currently using.
-Note: Must install pybind11 first before building manually.
+
+Note: Must install pybind11 first before building manually, or you can only build the library.
+
+If you use VC++ to compile, copy the `build/externel/bin/libopenblas.dll` to the same folder as the executable if needed (means you don't have OpenBLAS or any BLAS installed before).
 
 
 ## Ussage
