@@ -4,7 +4,7 @@ add_executable(test ${TEST_SOURCES})
 target_link_libraries(test cg)
 
 # for xsimd
-if(WIN32)
+if(MSVC)
 	set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
 	if(HAVE_AVX2_EXTENSIONS AND NOT MSVC_VERSION LESS 1800)
 		target_compile_options(test PRIVATE /arch:AVX2)

@@ -5,7 +5,7 @@ target_link_libraries(cg ${lapackblas_libraries} ${tbb_libraries})
 add_dependencies(cg xtensor-python)
 
 # for xsimd
-if(WIN32)
+if(MSVC)
 	set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
 	if(HAVE_AVX2_EXTENSIONS AND NOT MSVC_VERSION LESS 1800)
 		target_compile_options(cg PRIVATE /arch:AVX2)
