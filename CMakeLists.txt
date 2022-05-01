@@ -14,6 +14,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # The same as xtensor::optimize, but we are using manually config now
 if (MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:fast /w")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU") # Using g++
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast -ffast-math -fcompare-debug-second")
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast -ffast-math")
 endif()
