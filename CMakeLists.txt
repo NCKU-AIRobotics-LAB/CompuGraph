@@ -73,6 +73,7 @@ else()
       FetchContent_MakeAvailable(openblas)
       add_custom_target(openblas)
     endif()
+    set(NEED_COPY_OPENBLAS TRUE)
     set(lapackblas_libraries libopenblas Threads::Threads)
   endif()
 endif()
@@ -156,6 +157,16 @@ if(DEFINED PYBIND11_PYTHON_VERSION)
     find_package(Python3 ${PYBIND11_PYTHON_VERSION} EXACT COMPONENTS NumPy REQUIRED)
     pybind11_add_module(compugraph ${PYBIND_SOURCES})
     target_link_libraries(compugraph PUBLIC cg Python3::NumPy)
+
+    # Put this code after every executable target, if is Python library, setup.py will also copy the file to the destination.
+    if(NEED_COPY_OPENBLAS)
+      add_custom_command(
+        TARGET compugraph POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy 
+          ${EXTERNAL_INSTALL_LOCATION}/bin/libopenblas.dll
+          $<TARGET_FILE_DIR:compugraph>
+      )
+    endif()
 
     # for xsimd
     if(MSVC)

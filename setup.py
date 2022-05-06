@@ -7,13 +7,13 @@ import platform
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
 
-# Convert distutils Windows platform specifiers to CMake -A arguments
-PLAT_TO_CMAKE = {
-    "win32": "Win32",
-    "win-amd64": "x64",
-    "win-arm32": "ARM",
-    "win-arm64": "ARM64",
-}
+# # Convert distutils Windows platform specifiers to CMake -A arguments
+# PLAT_TO_CMAKE = {
+#     "win32": "Win32",
+#     "win-amd64": "x64",
+#     "win-arm32": "ARM",
+#     "win-arm64": "ARM64",
+# }
 
 
 # A CMakeExtension needs a sourcedir instead of a file list.
@@ -73,25 +73,30 @@ class CMakeBuild(build_ext):
                     pass
 
         else:
+            print()
+            print("Please install MinGW if you haven't!")
+            print("MinGW for Windows 32 bit and 64 bit: https://www.mingw-w64.org/")
+            print('Suggest Download: https://github.com/mstorsjo/llvm-mingw/releases')
+            print()
+            os.environ["CMAKE_GENERATOR"] = "MinGW Makefiles"
+            # # Single config generators are handled "normally"
+            # single_config = any(x in cmake_generator for x in {"NMake", "Ninja"})
 
-            # Single config generators are handled "normally"
-            single_config = any(x in cmake_generator for x in {"NMake", "Ninja"})
+            # # CMake allows an arch-in-generator style for backward compatibility
+            # contains_arch = any(x in cmake_generator for x in {"ARM", "Win64"})
 
-            # CMake allows an arch-in-generator style for backward compatibility
-            contains_arch = any(x in cmake_generator for x in {"ARM", "Win64"})
+            # # Specify the arch if using MSVC generator, but only if it doesn't
+            # # contain a backward-compatibility arch spec already in the
+            # # generator name.
+            # if not single_config and not contains_arch:
+            #     cmake_args += ["-A", PLAT_TO_CMAKE[self.plat_name]]
 
-            # Specify the arch if using MSVC generator, but only if it doesn't
-            # contain a backward-compatibility arch spec already in the
-            # generator name.
-            if not single_config and not contains_arch:
-                cmake_args += ["-A", PLAT_TO_CMAKE[self.plat_name]]
-
-            # Multi-config generators have a different way to specify configs
-            if not single_config:
-                cmake_args += [
-                    f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{cfg.upper()}={extdir}"
-                ]
-                build_args += ["--config", cfg]
+            # # Multi-config generators have a different way to specify configs
+            # if not single_config:
+            #     cmake_args += [
+            #         f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{cfg.upper()}={extdir}"
+            #     ]
+            #     build_args += ["--config", cfg]
 
         if sys.platform.startswith("darwin"):
             # Cross-compile support for macOS - respect ARCHFLAGS if set
@@ -120,7 +125,7 @@ class CMakeBuild(build_ext):
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
     name="compugraph",
-    version="0.0.5",
+    version="0.0.6",
     author="timcsy",
     author_email="timocsy@yahoo.com.com",
     description="CompuGraph - Simple Deep Learning Framework with Computational Graph",

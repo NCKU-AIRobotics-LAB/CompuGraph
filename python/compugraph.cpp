@@ -46,7 +46,7 @@ protected:
 
 
 void test() {
-	py::print("CompuGraph Testing Version 0.0.5");
+	py::print("CompuGraph Testing Version 0.0.6");
 }
 
 void dot() {
