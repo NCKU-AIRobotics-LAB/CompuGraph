@@ -118,20 +118,25 @@ else()
     DEPENDS xtensor
   )
 endif()
-find_package(pybind11 CONFIG QUIET)
-if(pybind11_FOUND)
-  find_package(xtensor-python QUIET)
-  if(xtensor-python_FOUND)
-    add_custom_target(xtensor-python)
+if(DEFINED PYBIND11_PYTHON_VERSION)
+  find_package(pybind11 CONFIG QUIET)
+  if(pybind11_FOUND)
+    find_package(xtensor-python QUIET)
+    if(xtensor-python_FOUND)
+      add_custom_target(xtensor-python)
+    else()
+      ExternalProject_Add(xtensor-python
+        GIT_REPOSITORY https://github.com/xtensor-stack/xtensor-python
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DPYBIND11_PYTHON_VERSION=${PYBIND11_PYTHON_VERSION}
+        DEPENDS xtensor-blas
+      )
+    endif()
   else()
-    ExternalProject_Add(xtensor-python
-      GIT_REPOSITORY https://github.com/xtensor-stack/xtensor-python
-      CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DPYBIND11_PYTHON_VERSION=${PYBIND11_PYTHON_VERSION}
-      DEPENDS xtensor-blas
-    )
+    message("Cannot find pybind11, install by pip install pybind11[global] or just it will only build the cg library.")
+    add_custom_target(xtensor-python)
   endif()
 else()
-  message("Cannot find pybind11, install by pip install pybind11[global] or just it will only build the cg library.")
+  message("-DPYBIND11_PYTHON_VERSION variable not defined, define it with current Python version if you want to bind Python.")
   add_custom_target(xtensor-python)
 endif()
 
@@ -141,26 +146,29 @@ link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
 add_subdirectory(src)
 add_subdirectory(tests)
 
-# Python bindings
-find_package(pybind11 CONFIG QUIET)
-if(pybind11_FOUND)
-  include_directories(${COMPUGRAPH_HEADER_DIR})
-  FILE(GLOB PYBIND_SOURCES python/**.cpp)
-  find_package(Python3 ${PYBIND11_PYTHON_VERSION} COMPONENTS NumPy REQUIRED)
-  pybind11_add_module(compugraph ${PYBIND_SOURCES})
-  target_link_libraries(compugraph PUBLIC cg Python3::NumPy)
 
-  # for xsimd
-  if(MSVC)
-    set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
-    if(HAVE_AVX2_EXTENSIONS AND NOT MSVC_VERSION LESS 1800)
-      target_compile_options(compugraph PRIVATE /arch:AVX2)
-    elseif(HAVE_AVX_EXTENSIONS AND NOT MSVC_VERSION LESS 1600)
-      target_compile_options(compugraph PRIVATE /arch:AVX)
-    elseif(ARCH STREQUAL "arm")
-      target_compile_options(compugraph PRIVATE /arch:ARMv7VE)
+# Python bindings (Better to put this at the root of the project)
+if(DEFINED PYBIND11_PYTHON_VERSION)
+  find_package(pybind11 CONFIG REQUIRED) # Using REQUIRED to make pip build failed if no pybind11 installed.
+  if(pybind11_FOUND)
+    include_directories(${COMPUGRAPH_HEADER_DIR})
+    FILE(GLOB PYBIND_SOURCES python/**.cpp)
+    find_package(Python3 ${PYBIND11_PYTHON_VERSION} EXACT COMPONENTS NumPy REQUIRED)
+    pybind11_add_module(compugraph ${PYBIND_SOURCES})
+    target_link_libraries(compugraph PUBLIC cg Python3::NumPy)
+
+    # for xsimd
+    if(MSVC)
+      set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
+      if(HAVE_AVX2_EXTENSIONS AND NOT MSVC_VERSION LESS 1800)
+        target_compile_options(compugraph PRIVATE /arch:AVX2)
+      elseif(HAVE_AVX_EXTENSIONS AND NOT MSVC_VERSION LESS 1600)
+        target_compile_options(compugraph PRIVATE /arch:AVX)
+      elseif(ARCH STREQUAL "arm")
+        target_compile_options(compugraph PRIVATE /arch:ARMv7VE)
+      endif()
+    else()
+      target_compile_options(compugraph PRIVATE -march=native)
     endif()
-  else()
-    target_compile_options(compugraph PRIVATE -march=native)
   endif()
 endif()

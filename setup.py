@@ -123,7 +123,7 @@ setup(
     version="0.0.5",
     author="timcsy",
     author_email="timocsy@yahoo.com.com",
-    description="A test project using pybind11 and CMake",
+    description="CompuGraph - Simple Deep Learning Framework with Computational Graph",
     long_description="",
     ext_modules=[CMakeExtension("compugraph")],
     cmdclass={"build_ext": CMakeBuild},
