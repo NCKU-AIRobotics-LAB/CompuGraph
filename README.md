@@ -18,6 +18,14 @@ pybind11 - [Homepage](https://pybind11.readthedocs.io/en/latest/)
 
 ## Setup
 
+For Windows user, please install MinGW First!!!!
+
+MinGW for Windows 32 bit and 64 bit: https://www.mingw-w64.org/
+
+Suggest Download: https://github.com/mstorsjo/llvm-mingw/releases
+
+You may have to install it at C:\MinGW folder and add it to your PATH environment variable.
+
 ### Install as Python Package
 To install as a Python package:
 ```
@@ -37,7 +45,7 @@ Note: The `3.8` part can change to the Python version you currently using.
 
 Note: Must install pybind11 first before building manually, or you can only build the library.
 
-If you use VC++ to compile, copy the `build/externel/bin/libopenblas.dll` to the same folder as the executable if needed (means you don't have OpenBLAS or any BLAS installed before).
+If you use MSVC to compile (not recommended), copy the `build/externel/bin/libopenblas.dll` to the same folder as the executable if needed (means you don't have OpenBLAS or any BLAS installed before).
 
 
 ## Ussage
