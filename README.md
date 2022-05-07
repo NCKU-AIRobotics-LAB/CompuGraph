@@ -24,7 +24,7 @@ MinGW for Windows 32 bit and 64 bit: https://www.mingw-w64.org/
 
 Suggest Download: https://github.com/mstorsjo/llvm-mingw/releases
 
-You may have to install it at C:\MinGW folder and add it to your PATH environment variable.
+You may have to install it at `C:\MinGW` folder and add `C:\MinGW\bin` to your PATH environment variable.
 
 ### Install as Python Package
 To install as a Python package:
